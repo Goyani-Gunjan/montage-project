@@ -7,6 +7,7 @@ const RenamePopup: React.FC<RenamePopupProps> = ({ onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 className="text-xl font-semibold mb-4">Rename your Portfolio</h2>
+
         <input
           type="text"
           className="w-full border p-2 rounded-md mb-4"

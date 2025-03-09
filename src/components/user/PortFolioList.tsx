@@ -8,7 +8,7 @@ type Design = {
   image: string;
 };
 
-export default function DesignList() {
+export default function PortFolioList() {
   const designs: Design[] = [
     {
       name: "Home-Model-1",

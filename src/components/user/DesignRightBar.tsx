@@ -1,19 +1,44 @@
 const RightBar = () => {
   return (
-    <div className=" w-64 bg-white p-4 shadow-md h-[calc(100vh-4rem)] overflow-y-auto mt-3">
-      <h2 className="text-lg font-semibold">Exterior Finish</h2>
-      <div className="mt-2 flex space-x-2">
-        <div className="w-10 h-10 bg-gray-300 rounded"></div>
-        <div className="w-10 h-10 bg-gray-300 rounded"></div>
+    <div className="w-80 bg-white p-4 shadow-lg border-l border-gray-200 h-screen overflow-y-auto fixed right-0 ">
+      <div className="flex items-center  justify-center mb-4 mt-3">
+        <h2 className="text-lg font-semibold text-center">
+          0 Bed 0.5 Bath 256 sqft
+        </h2>
       </div>
-      <h2 className="mt-4 text-lg font-semibold">Exterior Accent</h2>
-      <div className="mt-2 flex space-x-2">
-        <div className="w-10 h-10 bg-gray-300 rounded"></div>
+      <div className="w-full  h-50 bg-gray-200 rounded"></div>
+      <div className="mb-6 text-center mt-3">
+        <h3 className="text-lg font-medium mb-3">Exterior Accent</h3>
+        <div className="flex gap-2">
+          <div className="w-10 h-10 bg-gray-100 rounded-lg"></div>
+          <div className="w-10 h-10 bg-black rounded-lg"></div>
+        </div>
+        <p className="text-xs mt-3">Chalk Included</p>
       </div>
-      <div className="mt-4 text-xl font-bold">$64,000</div>
-      <button className="mt-4 w-full bg-blue-500 text-white py-2 rounded">
-        Order Now
-      </button>
+      <div className="mb-6 text-center mt-3">
+        <h3 className="text-lg font-medium mb-3">Exterior Accent</h3>
+        <div className="flex gap-2">
+          <div className="w-10 h-10 bg-gray-100 rounded-lg"></div>
+          <div className="w-10 h-10 bg-black rounded-lg"></div>
+        </div>
+        <p className="text-xs mt-3">Chalk Included</p>
+      </div>
+
+      <div className="w-full  h-50 bg-gray-200 rounded"></div>
+      <div className="mb-6 text-center mt-3">
+        <h3 className="text-lg font-medium mb-3">Exterior Accent</h3>
+        <div className="flex gap-2">
+          <div className="w-10 h-10 bg-gray-100 rounded-lg"></div>
+          <div className="w-10 h-10 bg-black rounded-lg"></div>
+        </div>
+        <p className="text-xs mt-3">Chalk Included</p>
+      </div>
+      <div className="flex items-center justify-between">
+        <p className="text-lg font-semibold">$64,000</p>
+        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg">
+          Order Now
+        </button>
+      </div>
     </div>
   );
 };

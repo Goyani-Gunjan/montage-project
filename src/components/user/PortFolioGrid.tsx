@@ -1,5 +1,5 @@
 import { FaEllipsisH } from "react-icons/fa";
-const Grid = () => {
+const PortFolioGrid = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="bg-white shadow-lg rounded-lg overflow-hidden p-4 relative">
@@ -18,4 +18,4 @@ const Grid = () => {
   );
 };
 
-export default Grid;
+export default PortFolioGrid;

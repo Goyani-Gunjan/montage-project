@@ -6,8 +6,8 @@ import {
   FaEllipsisH,
 } from "react-icons/fa";
 
-import List from "./List";
-import Grid from "./Grid";
+import List from "./PortFolioList";
+import Grid from "./PortFolioGrid";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Button from "./Button";
