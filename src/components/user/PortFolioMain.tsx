@@ -5,7 +5,7 @@ import {
   FaChevronDown,
   FaEllipsisH,
 } from "react-icons/fa";
-// import Grid from "./Grid";
+
 import List from "./List";
 import Grid from "./Grid";
 import { useNavigate } from "react-router-dom";
@@ -51,7 +51,6 @@ const PortFolioMain = () => {
         </div>
       </div>
 
-      {/* Title Section with Ellipsis Dropdown */}
       <div className="relative inline-block">
         <h2 className="text-xl font-semibold mb-4 flex items-center gap-5">
           All Designs
@@ -61,14 +60,13 @@ const PortFolioMain = () => {
           />
         </h2>
 
-        {/* Dropdown Menu */}
         {isDropdownOpen && (
           <div className="absolute left-36 top-2  bg-white shadow-lg rounded-md w-25">
             <button
               className="block w-full text-left px-4 py-2 hover:bg-gray-100"
               onClick={() => {
-                setIsRenameOpen(true); // ✅ No issues here if state is properly initialized
-                setIsDropdownOpen(false); // ✅ This should also work correctly
+                setIsRenameOpen(true);
+                setIsDropdownOpen(false);
               }}
             >
               Rename
@@ -97,7 +95,6 @@ const PortFolioMain = () => {
         <FaPlus /> Start Designing
       </button>
 
-      {/* Rename Popup */}
       {isRenameOpen && <RenamePopup onClose={() => setIsRenameOpen(false)} />}
       {isLeaveOpen && <LeavePopup onClose={() => setIsLeaveOpen(false)} />}
     </main>

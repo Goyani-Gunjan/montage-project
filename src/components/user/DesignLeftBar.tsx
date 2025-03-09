@@ -1,6 +1,5 @@
 import { FaList, FaTh } from "react-icons/fa";
 
-// Left Panel Component
 const DesignLeftBar = () => {
   return (
     <div className="fixed top-16 w-64 bg-white p-4 shadow-md h-[calc(100vh-4rem)] mt-3 flex flex-col">
@@ -11,7 +10,7 @@ const DesignLeftBar = () => {
           <FaList className="text-gray-600 cursor-pointer" />
         </div>
       </div>
-      {/* Scrollable Design List */}
+
       <div className="mt-4 space-y-4 overflow-y-auto flex-1">
         <div className="w-full h-24 bg-gray-200 rounded"></div>
         <div className="w-full h-24 bg-gray-200 rounded"></div>

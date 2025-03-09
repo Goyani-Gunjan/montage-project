@@ -21,7 +21,7 @@ const RenamePopup: React.FC<RenamePopupProps> = ({ onClose }) => {
           </button>
           <button
             className="bg-black text-white w-30 px-4 py-2 rounded-md hover:bg-gray-700 cursor-pointer"
-            onClick={onClose} // Only closes the popup
+            onClick={onClose}
           >
             Save
           </button>

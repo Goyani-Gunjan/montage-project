@@ -5,7 +5,6 @@ import {
   FaPencilRuler,
 } from "react-icons/fa";
 
-// Sidebar Component
 const Sidebar = () => {
   const menuItems = [
     {

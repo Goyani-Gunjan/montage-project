@@ -9,7 +9,6 @@ const LeavePopup: React.FC<LeavePopupProps> = ({ onClose }) => {
   const navigate = useNavigate();
 
   const handleLeave = () => {
-    // Navigate to main page when clicking "Leave"
     navigate("/mainPage");
   };
 

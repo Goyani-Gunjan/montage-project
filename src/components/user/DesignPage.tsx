@@ -4,9 +4,6 @@ import ModuleLeftbar from "./ModuleLeftbar";
 import Navbar from "./SecondNavbar";
 import Sidebar from "./Sidebar";
 
-// Right Panel Component
-
-// Main App Component
 const DesignPage = () => {
   return (
     <div>
