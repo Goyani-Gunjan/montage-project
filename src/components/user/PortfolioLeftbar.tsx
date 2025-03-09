@@ -1,11 +1,15 @@
 import { FaFolder, FaSearch } from "react-icons/fa";
 
-const PortfolioLeftbar = () => {
+const PortfolioLeftbar = ({
+  setIsPopupOpen,
+}: {
+  setIsPopupOpen: (open: boolean) => void;
+}) => {
   return (
     <aside className="w-1/5 bg-gray-50 p-4 h-full shadow">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">My Portfolios</h2>
-        <FaFolder className="text-xl" />
+        <FaFolder className="text-xl" onClick={() => setIsPopupOpen(true)} />
       </div>
       <div className="relative mb-4">
         <FaSearch className="absolute left-3 top-3 text-gray-400" />
