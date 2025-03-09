@@ -6,7 +6,7 @@ import {
   ReactNode,
 } from "react";
 import Cookies from "js-cookie";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
 interface DecodedToken {
