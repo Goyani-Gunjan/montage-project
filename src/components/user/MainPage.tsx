@@ -1,16 +1,17 @@
 import { useState } from "react";
 
-import PortfolioLeftbar from "./PortfolioLeftbar";
-import FirstNavbar from "./FirstNavbar";
+import PortfolioLeftbar from "../portfolio/PortfolioLeftbar";
+import PortfolioNavbar from "../portfolio/PortfolioNavbar";
 
-import PortfolioPopup from "./PortfolioPopup";
-import PortFolioMain from "./PortFolioMain";
+import PortfolioPopup from "../portfolio/PortfolioPopup";
+
+import PortFolioMain from "../portfolio/PortFolioMain";
 
 const MainPage = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   return (
     <div className="flex flex-col h-screen">
-      <FirstNavbar />
+      <PortfolioNavbar />
       <div className="flex flex-grow">
         <PortfolioLeftbar setIsPopupOpen={setIsPopupOpen} />
         <PortFolioMain />

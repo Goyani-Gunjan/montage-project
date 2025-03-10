@@ -1,4 +1,4 @@
-const FirstNavbar = () => {
+const PortfolioNavbar = () => {
   return (
     <nav className="bg-gray-100 p-4 flex justify-between items-center shadow w-full">
       <h1 className="text-xl font-bold">Montage</h1>
@@ -14,4 +14,4 @@ const FirstNavbar = () => {
   );
 };
 
-export default FirstNavbar;
+export default PortfolioNavbar;
