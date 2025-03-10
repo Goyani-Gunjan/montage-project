@@ -23,10 +23,10 @@ interface RequestOptions {
  */
 export const fetchGet = async <T = unknown>(
   pathName: string,
-  token: string | null = null,
+  token: string | null,
   method: "GET" | "PUT" | "DELETE" = "GET"
 ): Promise<ApiResponse<T>> => {
-  const apiURL = import.meta.env.VITE_URL;
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
 
   if (!navigator.onLine) {
     return { success: false, internet: true, message: "Connection Issue" };
@@ -43,7 +43,7 @@ export const fetchGet = async <T = unknown>(
   };
 
   try {
-    const request = await fetch(`${apiURL}${pathName}`, options);
+    const request = await fetch(`${BASE_URL}${pathName}`, options);
 
     if (!request.ok) {
       const errorResponse = await request.json();
@@ -65,6 +65,7 @@ export const fetchGet = async <T = unknown>(
 };
 
 /**
+ *
  * Generic POST request to a specific route with Authorization header
  * @template T - The expected response data type
  * @param pathName - Path after main server URL
@@ -76,12 +77,12 @@ export const fetchGet = async <T = unknown>(
  */
 export const fetchPost = async <T = unknown>(
   pathName: string,
-  token: string | null = null,
+  token = null,
   body: string | null = null,
   method: "POST" | "PUT" | "PATCH" = "POST",
   contentType: string = "application/json"
 ): Promise<ApiResponse<T>> => {
-  const apiURL = import.meta.env.VITE_URL;
+  const BASE_URL = import.meta.env.BASE_URL;
 
   if (!navigator.onLine) {
     return { success: false, internet: true, message: "Connection Issue" };
@@ -101,7 +102,7 @@ export const fetchPost = async <T = unknown>(
   };
 
   try {
-    const request = await fetch(`${apiURL}${pathName}`, options);
+    const request = await fetch(`${BASE_URL}${pathName}`, options);
 
     if (!request.ok) {
       const errorResponse = await request.json();
