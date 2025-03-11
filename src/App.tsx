@@ -1,95 +1,73 @@
-import React, { useState, Suspense } from "react";
+import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   OrbitControls,
   OrthographicCamera,
   PerspectiveCamera,
-  useGLTF,
 } from "@react-three/drei";
-import * as THREE from "three";
+import { observer } from "mobx-react-lite";
+import Sidebar from "./Sidebar";
+import CanvasWithDrop from "./CanvasWithDrop";
+import Manager from "./store/Manager";
+import Model from "./Model";
 
-function addEdgesToMesh(mesh, color, transparent = true) {
-  let edges = new THREE.EdgesGeometry(mesh.geometry, 80);
-  let line = new THREE.LineSegments(
-    edges,
-    new THREE.LineBasicMaterial({
-      color: color,
-      transparent: transparent,
-      opacity: 0.4,
-    })
-  );
-  line.name = "edges";
-  mesh.parent.add(line);
-}
-
-const Scene = ({ is3D }: { is3D: boolean }) => {
-  const { scene } = useGLTF("/Annex_tag.glb");
-
-  React.useMemo(() => {
-    scene.traverse((child) => {
-      if (child.isMesh) {
-        if (child.name.includes("Node") && child.material) {
-          child.material = child.material.clone();
-          child.material.color.set("cyan");
-          return;
-        }
-
-        if (!is3D && child.geometry && !child.name.includes("Node")) {
-          addEdgesToMesh(child, "black");
-        }
-        child.visible = is3D;
-      }
-    });
-  }, [scene, is3D]);
-
-  return (
-    <>
-      <OrthographicCamera
-        makeDefault={!is3D}
-        position={[0, 5, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        zoom={100}
-      />
-      <PerspectiveCamera makeDefault={is3D} fov={75} position={[0, 5, 5]} />
-      <OrbitControls enableRotate={is3D} />
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[5, 5, 5]} intensity={1} />
-      <primitive object={scene} />
-    </>
-  );
-};
-
-const App = () => {
-  const [is3D, setIs3D] = useState(false);
+const App = observer(() => {
+  const manager = new Manager();
 
   return (
     <div style={{ height: "100vh", width: "100vw", position: "relative" }}>
-      <Canvas>
-        <Suspense
-          fallback={
-            <mesh>
-              <boxGeometry />
-              <meshBasicMaterial color="gray" />
-            </mesh>
-          }
-        >
-          <Scene is3D={is3D} />
-        </Suspense>
-      </Canvas>
       <button
-        onClick={() => setIs3D(!is3D)}
         style={{
           position: "absolute",
-          top: 10,
-          left: 10,
-          zIndex: 1,
-          padding: "8px 16px",
+          top: "20px",
+          left: "20px",
+          zIndex: 10,
+          padding: "10px 20px",
+          backgroundColor: "#fff",
+          border: "1px solid #ccc",
+          cursor: "pointer",
         }}
+        onClick={() => manager.montageStore.toggle3D()}
       >
-        Switch to {is3D ? "2D" : "3D"}
+        Toggle to {manager.montageStore.is3D ? "2D" : "3D"} View
       </button>
+
+      <Canvas
+        shadows
+        camera={
+          manager.montageStore.is3D
+            ? { position: [0, 5, 10], fov: 50 }
+            : { position: [0, 5, 10], near: 0.1, far: 1000 }
+        }
+      >
+        <Suspense fallback={null}>
+          <ambientLight intensity={0.5} />
+          <directionalLight position={[10, 10, 5]} intensity={1} />
+
+          <CanvasWithDrop />
+          <gridHelper args={[100, 100]} />
+
+          {manager.montageStore.models.map((model, index) => (
+            <Model key={index} path={model.path} position={model.position} />
+          ))}
+        </Suspense>
+        <PerspectiveCamera
+          makeDefault={manager.montageStore.is3D}
+          fov={75}
+          position={[0, 5, 5]}
+        />
+        <OrthographicCamera
+          makeDefault={!manager.montageStore.is3D}
+          position={[0, 5, 0]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          zoom={100}
+        />
+        <OrbitControls />
+      </Canvas>
+
+      <Sidebar />
     </div>
   );
-};
+});
 
 export default App;
