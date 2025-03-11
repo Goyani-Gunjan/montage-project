@@ -34,11 +34,11 @@ const App = observer(() => {
 
       <Canvas shadows>
         <Suspense fallback={null}>
-          <ambientLight intensity={0.5} />
+          <ambientLight intensity={1} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
 
           <CanvasWithDrop />
-          <gridHelper args={[100, 100, "red", "black"]} />
+          <gridHelper args={[100, 100, "red", "lightgray"]} />
 
           {manager.montageStore.models.map((model, index) => (
             <Model key={index} path={model.path} position={model.position} />
@@ -55,7 +55,7 @@ const App = observer(() => {
           rotation={[-Math.PI / 2, 0, 0]}
           zoom={100}
         />
-        <OrbitControls />
+        <OrbitControls enableRotate={manager.montageStore.is3D} />
       </Canvas>
 
       <Sidebar />
