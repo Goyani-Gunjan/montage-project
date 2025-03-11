@@ -3,10 +3,39 @@ import { BsSliders } from "react-icons/bs";
 import Dwelling from "./Dwelling";
 import Annex from "./Annex";
 import LifeStyle from "./LifeStyle";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchGet } from "../../utils/FetchApi";
+import Cookies from "js-cookie";
+import UIStore from "../../store/UIStore";
+
+interface Module {
+  id: number;
+  name: string;
+  moduleImage: string;
+  pricePerSqft: number;
+  noOfBedrooms: number;
+  noOfBathrooms: number;
+  size: number;
+}
 
 const ModuleLeftbar = () => {
   const [activeComponent, setActiveComponent] = useState("Annex");
+
+  useEffect(() => {
+    const fetchModules = async () => {
+      const token: string | null = Cookies.get("token") ?? null;
+
+      const response = await fetchGet<Module[]>("/modules", token);
+
+      if (response.success && Array.isArray(response.data)) {
+        UIStore.setModules(response.data);
+      } else {
+        UIStore.setModules([]);
+      }
+    };
+
+    fetchModules();
+  }, []);
   const renderComponent = () => {
     switch (activeComponent) {
       case "Annex":
@@ -36,30 +65,17 @@ const ModuleLeftbar = () => {
       <hr className=" border border-gray-200" />
 
       <div className="flex justify-around my-3">
-        <button
-          onClick={() => setActiveComponent("Annex")}
-          className={`text-sm border border-gray-400 px-2 py-1 rounded hover:bg-gray-300 cursor-pointer ${
-            activeComponent === "Annex" ? "bg-gray-300" : ""
-          }`}
-        >
-          Annex
-        </button>
-        <button
-          onClick={() => setActiveComponent("Dwelling")}
-          className={`text-sm border border-gray-400 px-2 py-1 rounded hover:bg-gray-300 cursor-pointer ${
-            activeComponent === "Dwelling" ? "bg-gray-300" : ""
-          }`}
-        >
-          Dwelling
-        </button>
-        <button
-          onClick={() => setActiveComponent("Lifestyle")}
-          className={`text-sm border border-gray-400 px-2 py-1 rounded hover:bg-gray-300 cursor-pointer ${
-            activeComponent === "Lifestyle" ? "bg-gray-300" : ""
-          }`}
-        >
-          Lifestyle
-        </button>
+        {["Annex", "Dwelling", "Lifestyle"].map((type) => (
+          <button
+            key={type}
+            onClick={() => setActiveComponent(type)}
+            className={`text-sm border border-gray-400 px-2 py-1 rounded hover:bg-gray-300 cursor-pointer ${
+              activeComponent === type ? "bg-gray-300" : ""
+            }`}
+          >
+            {type}
+          </button>
+        ))}
       </div>
       <hr className=" border border-gray-200" />
 
