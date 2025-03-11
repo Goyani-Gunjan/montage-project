@@ -1,11 +1,12 @@
 import { observer } from "mobx-react";
 import { Edges, Line, useGLTF } from "@react-three/drei";
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import * as THREE from "three";
 import Manager from "./store/Manager";
 
 const Model = observer(({ path, position }) => {
   const manager = new Manager();
+  const groupRef = useRef();
 
   const modelData = manager.montageStore.models.find(
     (model) => model.path === path
@@ -60,23 +61,39 @@ const Model = observer(({ path, position }) => {
     return meshesArray;
   }, [scene, path]);
 
-  useEffect(() => {
-    const model = manager.montageStore.models.find((m) => m.path === path);
-    if (model) {
-      manager.montageStore.processMeshesForModel(model);
-    }
-  }, [manager.montageStore.is3D, path]);
+  const model = manager.montageStore.models.find((m) => m.path === path);
+  if (model) {
+    manager.montageStore.processMeshesForModel(model);
+  }
 
   const meshes = manager.montageStore.getMeshesByModelId(path);
 
   const cornerSpheres = manager.montageStore.selectedModelCorners;
+  const isSelected = manager.montageStore.selectedModelPath === path;
+
+  if (meshes.length > 0) {
+    const boundingBox = new THREE.Box3();
+
+    const tempGroup = new THREE.Group();
+
+    meshes.forEach((meshData) => {
+      const tempMesh = new THREE.Mesh(meshData.geometry);
+      tempMesh.applyMatrix4(meshData.matrix);
+      tempGroup.add(tempMesh);
+    });
+
+    boundingBox.setFromObject(tempGroup);
+
+    manager.montageStore.setModelBoundingBox(path, boundingBox);
+  }
 
   const handleClick = (e) => {
-    manager.montageStore.handleModelClick(e.object);
+    e.stopPropagation();
+    manager.montageStore.selectModel(path);
   };
 
   return (
-    <group position={position} onClick={handleClick}>
+    <group position={position} ref={groupRef} onClick={handleClick}>
       {meshes.map((meshData) => {
         if (!manager.montageStore.is3D) {
           const isNode = meshData.name.includes("Node");
@@ -139,41 +156,40 @@ const Model = observer(({ path, position }) => {
         );
       })}
 
-      {!manager.montageStore.is3D && (
-        <>
-          {cornerSpheres.map((corner, index) => (
-            <mesh key={index} position={corner}>
-              <sphereGeometry args={[0.08, 16, 16]} />
-              <meshStandardMaterial color="red" />
-            </mesh>
-          ))}
+      {/* Render cornerSpheres only if this model is selected */}
+      {!manager.montageStore.is3D &&
+        isSelected &&
+        cornerSpheres.length === 4 && (
+          <>
+            {cornerSpheres.map((corner, index) => (
+              <mesh key={index} position={corner}>
+                <sphereGeometry args={[0.08, 16, 16]} />
+                <meshStandardMaterial color="red" />
+              </mesh>
+            ))}
 
-          {cornerSpheres.length === 4 && (
-            <>
-              <Line
-                points={[cornerSpheres[0], cornerSpheres[1]]}
-                color="red"
-                lineWidth={2}
-              />
-              <Line
-                points={[cornerSpheres[1], cornerSpheres[2]]}
-                color="red"
-                lineWidth={2}
-              />
-              <Line
-                points={[cornerSpheres[2], cornerSpheres[3]]}
-                color="red"
-                lineWidth={2}
-              />
-              <Line
-                points={[cornerSpheres[3], cornerSpheres[0]]}
-                color="red"
-                lineWidth={2}
-              />
-            </>
-          )}
-        </>
-      )}
+            <Line
+              points={[cornerSpheres[0], cornerSpheres[1]]}
+              color="red"
+              lineWidth={2}
+            />
+            <Line
+              points={[cornerSpheres[1], cornerSpheres[2]]}
+              color="red"
+              lineWidth={2}
+            />
+            <Line
+              points={[cornerSpheres[2], cornerSpheres[3]]}
+              color="red"
+              lineWidth={2}
+            />
+            <Line
+              points={[cornerSpheres[3], cornerSpheres[0]]}
+              color="red"
+              lineWidth={2}
+            />
+          </>
+        )}
     </group>
   );
 });
