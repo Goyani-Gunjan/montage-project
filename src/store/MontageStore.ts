@@ -26,6 +26,7 @@ class MontageStore {
   manager: Manager | null = null;
   is3D: boolean = false;
   models: ModelData[] = [];
+  selectedModelCorners: THREE.Vector3[] = [];
 
   constructor(libState: Manager) {
     this.manager = libState;
@@ -70,7 +71,7 @@ class MontageStore {
               mesh.material = mesh.material.clone();
               mesh.processed = true;
             }
-            mesh.material.color.set("cyan");
+            mesh.material.color.set("cyan"); 
             mesh.visible = true;
           } else {
             mesh.visible = true;
@@ -79,16 +80,61 @@ class MontageStore {
           if (mesh.name.includes("Node")) {
             if (!mesh.processed) {
               mesh.material = mesh.material.clone();
-              mesh.material.color.set("cyan");
+              mesh.material.color.set("cyan"); 
               mesh.processed = true;
             }
+            mesh.visible = true; 
           }
-          
+          if (mesh.name.includes("Roof")) {
+            if (!mesh.processed) {
+              mesh.material = mesh.material.clone();
+              mesh.processed = true;
+            }
+            mesh.visible = false; 
+          }
+          if (mesh.name.includes("Floor")) {
+            if (!mesh.processed) {
+              mesh.material = mesh.material.clone();
+              mesh.material.color.set("#f3f3f0");
+              mesh.processed = true;
+            }
+            mesh.visible = true; 
+          }
         }
       }
     });
   });
-
+  handleModelClick(object: THREE.Mesh) {
+    const tempMesh = new THREE.Mesh(object.geometry, object.material);
+    tempMesh.applyMatrix4(object.matrix);
+    const boundingBox = new THREE.Box3().setFromObject(tempMesh);
+    const worldCorners : THREE.Vector3[] = [
+      new THREE.Vector3(
+        boundingBox.min.x - 0.05,
+        3.5,
+        boundingBox.min.z - 0.05
+      ),
+      new THREE.Vector3(
+        boundingBox.min.x - 0.05,
+        3.5,
+        boundingBox.max.z + 0.05
+      ),
+      new THREE.Vector3(
+        boundingBox.max.x + 0.05,
+        3.5,
+        boundingBox.max.z + 0.05
+      ),
+      new THREE.Vector3(
+        boundingBox.max.x + 0.05,
+        3.5,
+        boundingBox.min.z - 0.05
+      ),
+    ];
+    this.setSelectedModelCorners(worldCorners);
+  }
+setSelectedModelCorners(corners: THREE.Vector3[]) {
+  this.selectedModelCorners = corners;
+}
   getMeshesByModelId(path: string): MeshData[] {
     const model = this.models.find((model) => model.path === path);
     return model ? model.meshes : [];

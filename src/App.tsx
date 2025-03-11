@@ -32,20 +32,13 @@ const App = observer(() => {
         Toggle to {manager.montageStore.is3D ? "2D" : "3D"} View
       </button>
 
-      <Canvas
-        shadows
-        camera={
-          manager.montageStore.is3D
-            ? { position: [0, 5, 10], fov: 50 }
-            : { position: [0, 5, 10], near: 0.1, far: 1000 }
-        }
-      >
+      <Canvas shadows>
         <Suspense fallback={null}>
           <ambientLight intensity={0.5} />
-          <directionalLight position={[10, 10, 5]} intensity={1} />
+          <directionalLight position={[5, 5, 5]} intensity={1} />
 
           <CanvasWithDrop />
-          <gridHelper args={[100, 100]} />
+          <gridHelper args={[100, 100, "red", "black"]} />
 
           {manager.montageStore.models.map((model, index) => (
             <Model key={index} path={model.path} position={model.position} />

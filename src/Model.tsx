@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import { Edges, useGLTF } from "@react-three/drei";
+import { Edges, Line, useGLTF } from "@react-three/drei";
 import { useMemo, useEffect } from "react";
 import * as THREE from "three";
 import Manager from "./store/Manager";
@@ -69,23 +69,111 @@ const Model = observer(({ path, position }) => {
 
   const meshes = manager.montageStore.getMeshesByModelId(path);
 
+  const cornerSpheres = manager.montageStore.selectedModelCorners;
+
+  const handleClick = (e) => {
+    manager.montageStore.handleModelClick(e.object);
+  };
+
   return (
-    <group position={position}>
-      {meshes.map((meshData) => (
-        <mesh
-          key={meshData.id}
-          geometry={meshData.geometry}
-          material={meshData.material}
-          matrixAutoUpdate={false}
-          matrix={meshData.matrix}
-          visible={meshData.visible}
-          onClick={() => {
-            console.log(`Selected mesh with id: ${meshData.id}`);
-          }}
-        >
-          <Edges color={"black"} />
-        </mesh>
-      ))}
+    <group position={position} onClick={handleClick}>
+      {meshes.map((meshData) => {
+        if (!manager.montageStore.is3D) {
+          const isNode = meshData.name.includes("Node");
+          const isFloor = meshData.name.includes("Floor");
+          if (isNode) {
+            return (
+              <mesh
+                key={meshData.id}
+                geometry={meshData.geometry}
+                matrixAutoUpdate={false}
+                matrix={meshData.matrix}
+                visible={meshData.visible}
+                material={meshData.material}
+              >
+                <primitive
+                  object={meshData.material.clone().color.set("cyan")}
+                />
+              </mesh>
+            );
+          }
+          if (isFloor) {
+            return (
+              <mesh
+                key={meshData.id}
+                geometry={meshData.geometry}
+                matrixAutoUpdate={false}
+                matrix={meshData.matrix}
+                visible={meshData.visible}
+                material={meshData.material}
+              >
+                <primitive
+                  object={meshData.material.clone().color.set("#f3f3f0")}
+                />
+              </mesh>
+            );
+          } else {
+            return (
+              <mesh
+                key={meshData.id}
+                geometry={meshData.geometry}
+                matrixAutoUpdate={false}
+                matrix={meshData.matrix}
+                visible={meshData.visible}
+              >
+                <Edges color="black" />
+              </mesh>
+            );
+          }
+        }
+
+        return (
+          <mesh
+            key={meshData.id}
+            geometry={meshData.geometry}
+            material={meshData.material}
+            matrixAutoUpdate={false}
+            matrix={meshData.matrix}
+            visible={meshData.visible}
+          />
+        );
+      })}
+
+      {!manager.montageStore.is3D && (
+        <>
+          {cornerSpheres.map((corner, index) => (
+            <mesh key={index} position={corner}>
+              <sphereGeometry args={[0.08, 16, 16]} />
+              <meshStandardMaterial color="red" />
+            </mesh>
+          ))}
+
+          {cornerSpheres.length === 4 && (
+            <>
+              <Line
+                points={[cornerSpheres[0], cornerSpheres[1]]}
+                color="red"
+                lineWidth={2}
+              />
+              <Line
+                points={[cornerSpheres[1], cornerSpheres[2]]}
+                color="red"
+                lineWidth={2}
+              />
+              <Line
+                points={[cornerSpheres[2], cornerSpheres[3]]}
+                color="red"
+                lineWidth={2}
+              />
+              <Line
+                points={[cornerSpheres[3], cornerSpheres[0]]}
+                color="red"
+                lineWidth={2}
+              />
+            </>
+          )}
+        </>
+      )}
     </group>
   );
 });
