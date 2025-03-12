@@ -41,7 +41,12 @@ const App = observer(() => {
           <gridHelper args={[100, 100, "red", "lightgray"]} />
 
           {manager.montageStore.models.map((model, index) => (
-            <Model key={index} path={model.path} position={model.position} />
+            <Model
+              key={index}
+              path={model.path}
+              position={model.position}
+              id={model.id}
+            />
           ))}
         </Suspense>
         <PerspectiveCamera

@@ -50,8 +50,8 @@ const CanvasWithDrop: React.FC = () => {
           try {
             const fileData = event.dataTransfer.getData("application/json");
             const file = JSON.parse(fileData);
-
-            manager.montageStore.loadModel(file.path, point);
+            const modelId = Date.now().toString();
+            manager.montageStore.loadModel(modelId, file.path, point);
           } catch (err) {
             console.error("Error parsing dropped data:", err);
           }

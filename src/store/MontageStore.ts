@@ -16,6 +16,7 @@ interface MeshData {
 }
 
 interface ModelData {
+  id: string;
   path: string;
   position: THREE.Vector3;
   meshes: MeshData[];
@@ -28,7 +29,7 @@ class MontageStore {
   is3D: boolean = false;
   models: ModelData[] = [];
   selectedModelCorners: THREE.Vector3[] = [];
-  selectedModelPath: string | null = null;
+  selectedModelId: string | null = null;
 
   constructor(libState: Manager) {
     this.manager = libState;
@@ -40,16 +41,16 @@ class MontageStore {
     this.processMeshesForAllModels();
   }
 
-  loadModel(path: string, position: THREE.Vector3) {
-    const existingModel = this.models.find((model) => model.path === path);
+  loadModel(id: string, path: string, position: THREE.Vector3) {
+    const existingModel = this.models.find((model) => model.id === id);
 
     if (!existingModel) {
-      this.models.push({ path, position, meshes: [] });
+      this.models.push({ id, path, position, meshes: [] });
     }
   }
 
-  storeMeshesForModel(path: string, meshes: MeshData[]) {
-    const model = this.models.find((model) => model.path === path);
+  storeMeshesForModel(id: string, meshes: MeshData[]) {
+    const model = this.models.find((model) => model.id === id);
 
     if (model) {
       model.meshes = meshes;
@@ -112,22 +113,19 @@ class MontageStore {
     });
   });
 
-  // Store the bounding box for a model
-  setModelBoundingBox = action((path: string, boundingBox: THREE.Box3) => {
-    const model = this.models.find((model) => model.path === path);
+  setModelBoundingBox = action((id: string, boundingBox: THREE.Box3) => {
+    const model = this.models.find((model) => model.id === id);
     if (model) {
       model.boundingBox = boundingBox;
     }
   });
 
-  // New method to select a model and update corner spheres
-  selectModel = action((path: string) => {
-    const model = this.models.find((model) => model.path === path);
+  selectModel = action((id: string) => {
+    const model = this.models.find((model) => model.id === id);
 
     if (model && model.boundingBox) {
       const boundingBox = model.boundingBox;
 
-      // Create corner points from the bounding box with fixed Y value (3.5)
       const worldCorners: THREE.Vector3[] = [
         new THREE.Vector3(boundingBox.min.x, 3.5, boundingBox.min.z),
         new THREE.Vector3(boundingBox.min.x, 3.5, boundingBox.max.z),
@@ -135,31 +133,30 @@ class MontageStore {
         new THREE.Vector3(boundingBox.max.x, 3.5, boundingBox.min.z),
       ];
 
-      this.selectedModelPath = path;
+      this.selectedModelId = id;
       this.selectedModelCorners = worldCorners;
 
-      console.log("Model selected:", path);
+      console.log("Model selected:", id);
       console.log("Corners:", worldCorners);
     } else {
-      console.warn("Model not found or no bounding box available:", path);
+      console.warn("Model not found or no bounding box available:", id);
     }
   });
 
-  // For backward compatibility
-  handleModelClick(object: THREE.Mesh, path: string) {
-    this.selectModel(path);
+  handleModelClick(object: THREE.Mesh, id: string) {
+    this.selectModel(id);
   }
 
   setSelectedModelCorners(corners: THREE.Vector3[]) {
     this.selectedModelCorners = corners;
   }
 
-  setSelectedModelPath(path: string | null) {
-    this.selectedModelPath = path;
+  setSelectedModelId(id: string | null) {
+    this.selectedModelId = id;
   }
 
-  getMeshesByModelId(path: string): MeshData[] {
-    const model = this.models.find((model) => model.path === path);
+  getMeshesByModelId(id: string): MeshData[] {
+    const model = this.models.find((model) => model.id === id);
     return model ? model.meshes : [];
   }
 }
