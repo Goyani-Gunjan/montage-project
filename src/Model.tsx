@@ -1,26 +1,37 @@
 import { observer } from "mobx-react";
-import { useMemo, useRef, useState } from "react";
+
+import { useMemo, useRef, useState, useEffect } from "react";
 import * as THREE from "three";
+import { useGLTF } from "@react-three/drei";
 import Manager from "./store/Manager";
 import ModelRenderer from "./ModelRenderer";
 import BoundingBox from "./BoundingBox";
 import HoverEffects from "./HoverEffects";
-import { useGLTF } from "@react-three/drei";
 
-const Model = observer(({ id, path, position }) => {
-  const manager = new Manager();
+import HtmlList from "./HtmlList";
+
+const Model = observer(({ id, path, position, sharedManager }) => {
+  // Use shared manager instance instead of creating a new one
+  const manager = sharedManager || new Manager();
   const groupRef = useRef();
   const [isHovered, setIsHovered] = useState(false);
+  const [showControls, setShowControls] = useState(false);
+  const [flipX, setFlipX] = useState(1);
+  const [flipZ, setFlipZ] = useState(1);
 
   const modelData = manager.montageStore.models.find(
     (model) => model.id === id
   );
 
   if (!modelData) {
-    manager.montageStore.loadModel(path, id, position);
+    manager.montageStore.loadModel(id, path, position);
   }
 
   const { scene } = useGLTF(path);
+
+  useEffect(() => {
+    setShowControls(manager.montageStore.selectedModelId === id);
+  }, [manager.montageStore.selectedModelId, id]);
 
   const tempMeshes = useMemo(() => {
     if (!scene) return [];
@@ -63,7 +74,7 @@ const Model = observer(({ id, path, position }) => {
     }
 
     return meshesArray;
-  }, [scene, id]);
+  }, [scene, id, modelData, manager.montageStore]);
 
   const model = manager.montageStore.models.find((m) => m.id === id);
   if (model) {
@@ -86,7 +97,7 @@ const Model = observer(({ id, path, position }) => {
       return boundingBox;
     }
     return null;
-  }, [meshes, path]);
+  }, [meshes, id, manager.montageStore]);
 
   const handleClick = (e) => {
     e.stopPropagation();
@@ -103,6 +114,9 @@ const Model = observer(({ id, path, position }) => {
     setIsHovered(false);
   };
 
+  const handleFlipHorizontal = () => setFlipX((prev) => prev * -1);
+  const handleFlipVertical = () => setFlipZ((prev) => prev * -1);
+
   return (
     <group
       position={position}
@@ -110,14 +124,29 @@ const Model = observer(({ id, path, position }) => {
       onClick={handleClick}
       onPointerOver={handlePointerOver}
       onPointerOut={handlePointerOut}
+      scale={[flipX, 1, flipZ]}
     >
       <ModelRenderer meshes={meshes} manager={manager} />
+
       <BoundingBox
         boundingBox={boundingBox}
-        isSelected={manager.montageStore.selectedModelPath === path}
-        cornerSpheres={manager.montageStore.selectedModelCorners}
+        isSelected={manager.montageStore.selectedModelId === id}
+        cornerSpheres={
+          manager.montageStore.selectedModelId === id
+            ? manager.montageStore.selectedModelCorners
+            : []
+        }
       />
+
       <HoverEffects boundingBox={boundingBox} isHovered={isHovered} />
+
+      {showControls && (
+        <HtmlList
+          onFlipHorizontal={handleFlipHorizontal}
+          onFlipVertical={handleFlipVertical}
+          modelId={id}
+        />
+      )}
     </group>
   );
 });

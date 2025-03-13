@@ -31,25 +31,29 @@ class MontageStore {
   selectedModelCorners: THREE.Vector3[] = [];
   selectedModelId: string | null = null;
 
+  planeRef: THREE.Mesh | null = null;
+
   constructor(libState: Manager) {
     this.manager = libState;
     makeAutoObservable(this);
   }
 
-  toggle3D() {
+  setPlaneRef = action((ref: THREE.Mesh) => {
+    this.planeRef = ref;
+  });
+
+  toggle3D = action(() => {
     this.is3D = !this.is3D;
     this.processMeshesForAllModels();
-  }
+  });
 
-  loadModel(id: string, path: string, position: THREE.Vector3) {
-    const existingModel = this.models.find((model) => model.id === id);
-
-    if (!existingModel) {
+  loadModel = action((id: string, path: string, position: THREE.Vector3) => {
+    if (!this.models.some((model) => model.id === id)) {
       this.models.push({ id, path, position, meshes: [] });
     }
-  }
+  });
 
-  storeMeshesForModel(id: string, meshes: MeshData[]) {
+  storeMeshesForModel = action((id: string, meshes: MeshData[]) => {
     const model = this.models.find((model) => model.id === id);
 
     if (model) {
@@ -59,7 +63,7 @@ class MontageStore {
         model.processed = true;
       }
     }
-  }
+  });
 
   processMeshesForAllModels = action(() => {
     this.models.forEach((model) => {
@@ -69,46 +73,38 @@ class MontageStore {
 
   processMeshesForModel = action((model: ModelData) => {
     model.meshes.forEach((mesh) => {
-      if (mesh) {
-        if (this.is3D) {
-          if (mesh.name.includes("Node")) {
-            if (!mesh.processed) {
-              mesh.material = mesh.material.clone();
-              mesh.processed = true;
-            }
-            mesh.material.color.set("cyan");
-            mesh.visible = true;
-          } else {
-            mesh.visible = true;
+      if (!mesh) return;
+
+      // Common processing regardless of 3D state
+      if (mesh.name.includes("Node") && !mesh.processed) {
+        mesh.material = mesh.material.clone();
+        mesh.material.color.set("cyan");
+        mesh.processed = true;
+        mesh.visible = true;
+      }
+
+      if (!this.is3D) {
+        // 2D specific processing
+        if (mesh.name.includes("Roof")) {
+          if (!mesh.processed) {
+            mesh.material = mesh.material.clone();
+            mesh.processed = true;
           }
-        } else {
-          if (mesh.name.includes("Node")) {
-            if (!mesh.processed) {
-              mesh.material = mesh.material.clone();
-              mesh.material.color.set("cyan");
-              mesh.processed = true;
-            }
-            mesh.visible = true;
+          mesh.visible = false;
+        } else if (mesh.name.includes("Floor")) {
+          if (!mesh.processed) {
+            mesh.material = mesh.material.clone();
+            mesh.material.color.set("#ffffff");
+            mesh.material.emissive.set("#444444");
+            mesh.material.metalness = 0;
+            mesh.material.roughness = 0.5;
+            mesh.processed = true;
           }
-          if (mesh.name.includes("Roof")) {
-            if (!mesh.processed) {
-              mesh.material = mesh.material.clone();
-              mesh.processed = true;
-            }
-            mesh.visible = false;
-          }
-          if (mesh.name.includes("Floor")) {
-            if (!mesh.processed) {
-              mesh.material = mesh.material.clone();
-              mesh.material.color.set("#ffffff");
-              mesh.material.emissive.set("#444444");
-              mesh.material.metalness = 0;
-              mesh.material.roughness = 0.5;
-              mesh.processed = true;
-            }
-            mesh.visible = true;
-          }
+          mesh.visible = true;
         }
+      } else {
+        // 3D specific processing - make everything visible
+        mesh.visible = true;
       }
     });
   });
@@ -117,43 +113,39 @@ class MontageStore {
     const model = this.models.find((model) => model.id === id);
     if (model) {
       model.boundingBox = boundingBox;
+
+      // If this is the selected model, update the corners
+      if (this.selectedModelId === id) {
+        this.updateSelectedModelCorners(boundingBox);
+      }
     }
+  });
+
+  updateSelectedModelCorners = action((boundingBox: THREE.Box3) => {
+    this.selectedModelCorners = [
+      new THREE.Vector3(boundingBox.min.x, 3.5, boundingBox.min.z),
+      new THREE.Vector3(boundingBox.min.x, 3.5, boundingBox.max.z),
+      new THREE.Vector3(boundingBox.max.x, 3.5, boundingBox.max.z),
+      new THREE.Vector3(boundingBox.max.x, 3.5, boundingBox.min.z),
+    ];
   });
 
   selectModel = action((id: string) => {
     const model = this.models.find((model) => model.id === id);
 
-    if (model && model.boundingBox) {
-      const boundingBox = model.boundingBox;
+    if (!model) {
+      console.warn("Model not found:", id);
+      return;
+    }
 
-      const worldCorners: THREE.Vector3[] = [
-        new THREE.Vector3(boundingBox.min.x, 3.5, boundingBox.min.z),
-        new THREE.Vector3(boundingBox.min.x, 3.5, boundingBox.max.z),
-        new THREE.Vector3(boundingBox.max.x, 3.5, boundingBox.max.z),
-        new THREE.Vector3(boundingBox.max.x, 3.5, boundingBox.min.z),
-      ];
+    this.selectedModelId = id;
 
-      this.selectedModelId = id;
-      this.selectedModelCorners = worldCorners;
-
-      console.log("Model selected:", id);
-      console.log("Corners:", worldCorners);
+    if (model.boundingBox) {
+      this.updateSelectedModelCorners(model.boundingBox);
     } else {
-      console.warn("Model not found or no bounding box available:", id);
+      this.selectedModelCorners = [];
     }
   });
-
-  handleModelClick(object: THREE.Mesh, id: string) {
-    this.selectModel(id);
-  }
-
-  setSelectedModelCorners(corners: THREE.Vector3[]) {
-    this.selectedModelCorners = corners;
-  }
-
-  setSelectedModelId(id: string | null) {
-    this.selectedModelId = id;
-  }
 
   getMeshesByModelId(id: string): MeshData[] {
     const model = this.models.find((model) => model.id === id);
