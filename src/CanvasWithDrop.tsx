@@ -3,31 +3,15 @@ import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import Manager from "./store/Manager";
 
-interface InvisiblePlaneProps {
-  ref: React.Ref<THREE.Mesh>;
-}
-
-const InvisiblePlane = React.forwardRef<THREE.Mesh, InvisiblePlaneProps>(
-  (_, ref) => {
-    return (
-      <mesh
-        ref={ref}
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, 0, 0]}
-        receiveShadow
-      >
-        <planeGeometry args={[100, 100]} />
-        <meshBasicMaterial visible={false} />
-      </mesh>
-    );
-  }
-);
-
 const CanvasWithDrop: React.FC = () => {
   const { gl, camera } = useThree();
   const manager = new Manager();
   const planeRef = useRef<THREE.Mesh>(null);
-
+  useEffect(() => {
+    if (planeRef.current) {
+      manager.montageStore.setPlaneRef(planeRef.current);
+    }
+  }, [planeRef, manager.montageStore]);
   const raycaster = useMemo(() => new THREE.Raycaster(), []);
   const mouse = useMemo(() => new THREE.Vector2(), []);
   const handleDrop = useCallback(
@@ -83,7 +67,15 @@ const CanvasWithDrop: React.FC = () => {
 
   return (
     <>
-      <InvisiblePlane ref={planeRef} />
+      <mesh
+        ref={planeRef}
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, 0, 0]}
+        receiveShadow
+      >
+        <planeGeometry args={[100, 100]} />
+        <meshBasicMaterial visible={false} />
+      </mesh>
       <DragDropHandler />
     </>
   );

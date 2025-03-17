@@ -22,6 +22,8 @@ interface ModelData {
   meshes: MeshData[];
   processed?: boolean;
   boundingBox?: THREE.Box3;
+  rotation: THREE.Euler;
+
 }
 
 class MontageStore {
@@ -30,6 +32,10 @@ class MontageStore {
   models: ModelData[] = [];
   selectedModelCorners: THREE.Vector3[] = [];
   selectedModelId: string | null = null;
+  planeRef: THREE.Mesh | null = null; 
+  isDragging: boolean | null = null;
+  draggedModel :THREE.Group | null = null;
+
 
   constructor(libState: Manager) {
     this.manager = libState;
@@ -41,14 +47,22 @@ class MontageStore {
     this.processMeshesForAllModels();
   }
 
+  setPlaneRef(planeRef: THREE.Mesh) {
+    this.planeRef = planeRef;
+  }
   loadModel(id: string, path: string, position: THREE.Vector3) {
     const existingModel = this.models.find((model) => model.id === id);
 
     if (!existingModel) {
-      this.models.push({ id, path, position, meshes: [] });
+      this.models.push({ id, path, position, meshes: [], rotation: new THREE.Euler(0, 0, 0) });
     }
   }
-
+  updateModelRotation(modelId, rotation) {
+    const model = this.models.find(m => m.id === modelId);
+    if (model) {
+      model.rotation = rotation;
+    }
+  }
   storeMeshesForModel(id: string, meshes: MeshData[]) {
     const model = this.models.find((model) => model.id === id);
 
@@ -67,6 +81,24 @@ class MontageStore {
     });
   });
 
+
+  startDragging(model : THREE.Group) {
+    this.isDragging = true;
+    this.draggedModel = model;
+  }
+
+
+  handleDrag(point) {
+    if(this.draggedModel)
+    this.draggedModel.position.copy(point);
+  }
+
+
+  stopDragging() {
+    this.isDragging = false;
+    this.draggedModel = null;
+  }
+
   processMeshesForModel = action((model: ModelData) => {
     model.meshes.forEach((mesh) => {
       if (mesh) {
@@ -78,7 +110,8 @@ class MontageStore {
             }
             mesh.material.color.set("cyan");
             mesh.visible = true;
-          } else {
+          }
+          else {
             mesh.visible = true;
           }
         } else {
