@@ -42,14 +42,16 @@ class MontageStore {
     makeAutoObservable(this);
   }
 
-  toggle3D() {
+  setPlaneRef = action((ref: THREE.Mesh) => {
+    this.planeRef = ref;
+  });
+
+  toggle3D = action(() => {
     this.is3D = !this.is3D;
     this.processMeshesForAllModels();
-  }
+  });
 
-  setPlaneRef(planeRef: THREE.Mesh) {
-    this.planeRef = planeRef;
-  }
+
   loadModel(id: string, path: string, position: THREE.Vector3) {
     const existingModel = this.models.find((model) => model.id === id);
 
@@ -73,7 +75,7 @@ class MontageStore {
         model.processed = true;
       }
     }
-  }
+  };
 
   processMeshesForAllModels = action(() => {
     this.models.forEach((model) => {
@@ -150,43 +152,39 @@ class MontageStore {
     const model = this.models.find((model) => model.id === id);
     if (model) {
       model.boundingBox = boundingBox;
+
+      // If this is the selected model, update the corners
+      if (this.selectedModelId === id) {
+        this.updateSelectedModelCorners(boundingBox);
+      }
     }
+  });
+
+  updateSelectedModelCorners = action((boundingBox: THREE.Box3) => {
+    this.selectedModelCorners = [
+      new THREE.Vector3(boundingBox.min.x, 3.5, boundingBox.min.z),
+      new THREE.Vector3(boundingBox.min.x, 3.5, boundingBox.max.z),
+      new THREE.Vector3(boundingBox.max.x, 3.5, boundingBox.max.z),
+      new THREE.Vector3(boundingBox.max.x, 3.5, boundingBox.min.z),
+    ];
   });
 
   selectModel = action((id: string) => {
     const model = this.models.find((model) => model.id === id);
 
-    if (model && model.boundingBox) {
-      const boundingBox = model.boundingBox;
+    if (!model) {
+      console.warn("Model not found:", id);
+      return;
+    }
 
-      const worldCorners: THREE.Vector3[] = [
-        new THREE.Vector3(boundingBox.min.x, 3.5, boundingBox.min.z),
-        new THREE.Vector3(boundingBox.min.x, 3.5, boundingBox.max.z),
-        new THREE.Vector3(boundingBox.max.x, 3.5, boundingBox.max.z),
-        new THREE.Vector3(boundingBox.max.x, 3.5, boundingBox.min.z),
-      ];
+    this.selectedModelId = id;
 
-      this.selectedModelId = id;
-      this.selectedModelCorners = worldCorners;
-
-      console.log("Model selected:", id);
-      console.log("Corners:", worldCorners);
+    if (model.boundingBox) {
+      this.updateSelectedModelCorners(model.boundingBox);
     } else {
-      console.warn("Model not found or no bounding box available:", id);
+      this.selectedModelCorners = [];
     }
   });
-
-  handleModelClick(object: THREE.Mesh, id: string) {
-    this.selectModel(id);
-  }
-
-  setSelectedModelCorners(corners: THREE.Vector3[]) {
-    this.selectedModelCorners = corners;
-  }
-
-  setSelectedModelId(id: string | null) {
-    this.selectedModelId = id;
-  }
 
   getMeshesByModelId(id: string): MeshData[] {
     const model = this.models.find((model) => model.id === id);
