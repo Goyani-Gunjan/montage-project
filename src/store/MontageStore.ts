@@ -34,7 +34,6 @@ class MontageStore {
   selectedModelId: string | null = null;
   planeRef: THREE.Mesh | null = null; 
   isDragging: boolean | null = null;
-  draggedModel :THREE.Group | null = null;
 
 
   constructor(libState: Manager) {
@@ -48,6 +47,8 @@ class MontageStore {
 
   toggle3D = action(() => {
     this.is3D = !this.is3D;
+    this.selectedModelId = null; 
+    this.selectedModelCorners = [];
     this.processMeshesForAllModels();
   });
 
@@ -59,7 +60,7 @@ class MontageStore {
       this.models.push({ id, path, position, meshes: [], rotation: new THREE.Euler(0, 0, 0) });
     }
   }
-  updateModelRotation(modelId, rotation) {
+  updateModelRotation(modelId: string, rotation: THREE.Euler) {
     const model = this.models.find(m => m.id === modelId);
     if (model) {
       model.rotation = rotation;
@@ -83,22 +84,28 @@ class MontageStore {
     });
   });
 
-
-  startDragging(model : THREE.Group) {
-    this.isDragging = true;
-    this.draggedModel = model;
+handleDrag = action((point : THREE.Vector3) => {
+  if (this.isDragging && this.selectedModelId && point) {
+    const model = this.models.find(m => m.id === this.selectedModelId);
+    if (model) {
+      model.position = new THREE.Vector3(point.x, point.y, point.z);
+    }
   }
+});
 
-
-  handleDrag(point) {
-    if(this.draggedModel)
-    this.draggedModel.position.copy(point);
+startDragging = action((modelGroup : THREE.Group) => {
+  if (modelGroup && modelGroup.parent) {
+    const modelId = modelGroup.parent.name || this.selectedModelId;
+    if (modelId) {
+      this.selectModel(modelId);
+      this.isDragging = true;
+    }
   }
+});
 
 
   stopDragging() {
     this.isDragging = false;
-    this.draggedModel = null;
   }
 
   processMeshesForModel = action((model: ModelData) => {
@@ -153,7 +160,6 @@ class MontageStore {
     if (model) {
       model.boundingBox = boundingBox;
 
-      // If this is the selected model, update the corners
       if (this.selectedModelId === id) {
         this.updateSelectedModelCorners(boundingBox);
       }
@@ -184,6 +190,24 @@ class MontageStore {
     } else {
       this.selectedModelCorners = [];
     }
+  });
+
+  deleteModel = action((id: string) => {
+    const modelIndex = this.models.findIndex((model) => model.id === id);
+
+    if (modelIndex === -1) {
+      console.warn("Model not found for deletion:", id);
+      return;
+    }
+
+    if (this.selectedModelId === id) {
+      this.selectedModelId = null;
+      this.selectedModelCorners = [];
+    }
+
+    this.models.splice(modelIndex, 1);
+
+    console.log(`Model ${id} deleted successfully`);
   });
 
   getMeshesByModelId(id: string): MeshData[] {

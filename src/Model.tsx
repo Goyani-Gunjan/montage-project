@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import { useMemo, useRef, useState, useCallback } from "react";
+import { useMemo, useRef, useState, useCallback, useEffect } from "react";
 import * as THREE from "three";
 import Manager from "./store/Manager";
 import ModelRenderer from "./ModelRenderer";
@@ -8,6 +8,7 @@ import HoverEffects from "./HoverEffects";
 import { useGLTF } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import gsap from "gsap";
+import HtmlList from "./HtmlList";
 
 const findNearestAngle = (deg: number): number => {
   const allowed = [0, 90, 180, 270];
@@ -17,7 +18,12 @@ const findNearestAngle = (deg: number): number => {
   );
 };
 
-const performRaycastFromMouse = (e, camera, gl, plane) => {
+const performRaycastFromMouse = (
+  e = { clientX: 0, clientY: 0 },
+  camera: THREE.Camera,
+  gl: THREE.WebGLRenderer,
+  plane: THREE.Mesh
+) => {
   const mouse = new THREE.Vector2();
   const raycaster = new THREE.Raycaster();
   const canvas = gl.domElement;
@@ -28,7 +34,7 @@ const performRaycastFromMouse = (e, camera, gl, plane) => {
   if (plane) {
     const intersects = raycaster.intersectObject(plane, true);
     if (intersects.length > 0) {
-      return intersects[0].point; // Return the intersection point on the plane
+      return intersects[0].point;
     }
   }
   return null;
@@ -36,8 +42,9 @@ const performRaycastFromMouse = (e, camera, gl, plane) => {
 
 const Model = observer(({ id, path, position }) => {
   const manager = new Manager();
-  const groupRef = useRef();
+  const [showControls, setShowControls] = useState(false);
 
+  const groupRef = useRef();
   const [isHovered, setIsHovered] = useState(false);
   const dragData = useRef<
     Record<
@@ -60,6 +67,11 @@ const Model = observer(({ id, path, position }) => {
   }
 
   const { scene } = useGLTF(path);
+
+  useEffect(() => {
+    const isSelected = manager.montageStore.selectedModelId === id;
+    setShowControls(isSelected);
+  }, [manager.montageStore.selectedModelId, id]);
 
   const tempMeshes = useMemo(() => {
     if (!scene) return [];
@@ -102,7 +114,7 @@ const Model = observer(({ id, path, position }) => {
     }
 
     return meshesArray;
-  }, [scene, id]);
+  }, [scene, id, modelData]);
 
   const model = manager.montageStore.models.find((m) => m.id === id);
   if (model) {
@@ -125,7 +137,7 @@ const Model = observer(({ id, path, position }) => {
       return boundingBox;
     }
     return null;
-  }, [meshes, path]);
+  }, [meshes, id]);
 
   const handleClick = useCallback(
     (e) => {
@@ -135,12 +147,12 @@ const Model = observer(({ id, path, position }) => {
     [id, manager]
   );
 
-  const handlePointerOver = (e) => {
+  const handlePointerOver = (e: React.PointerEvent) => {
     e.stopPropagation();
     setIsHovered(true);
   };
 
-  const handlePointerOut = (e) => {
+  const handlePointerOut = (e: React.PointerEvent) => {
     e.stopPropagation();
     setIsHovered(false);
   };
@@ -156,7 +168,6 @@ const Model = observer(({ id, path, position }) => {
       const data = dragData.current[i];
       if (!data) return;
 
-      // Adjusting the raycast to take model's position into account
       const hit = performRaycastFromMouse(
         e,
         camera,
@@ -167,7 +178,6 @@ const Model = observer(({ id, path, position }) => {
 
       const pointer = hit.clone();
 
-      // Adjusting vectors to account for model's position
       const iv = new THREE.Vector2(
         data.initialPointer.x - model.position.x,
         data.initialPointer.z - model.position.z
@@ -195,7 +205,7 @@ const Model = observer(({ id, path, position }) => {
       const model = manager.montageStore.models.find((m) => m.id === id);
       if (!model) return;
 
-      const center = new THREE.Vector3(...model.position); // Ensure this is model's position
+      const center = new THREE.Vector3(...model.position);
       const hit = performRaycastFromMouse(
         e,
         camera,
@@ -238,7 +248,6 @@ const Model = observer(({ id, path, position }) => {
       const duration = Math.min(0.5, (Math.abs(delta) / Math.PI) * 0.8);
       const temp = { rot: curRot };
 
-      // animating.current = true;
       gsap.to(temp, {
         rot: curRot + delta,
         duration,
@@ -248,7 +257,6 @@ const Model = observer(({ id, path, position }) => {
         },
         onComplete: () => {
           manager.montageStore.updateModelRotation(id, [0, -targetRad, 0]);
-          // animating.current = false;
         },
         id: "modelRotation",
       });
@@ -258,32 +266,45 @@ const Model = observer(({ id, path, position }) => {
     [id, manager]
   );
 
-  const handlePointerDown = (e) => {
+  const handlePointerDown = (e: React.PointerEvent) => {
     e.stopPropagation();
+    if (groupRef.current) {
+      groupRef.current.name = id;
+    }
     manager.montageStore.startDragging(groupRef.current);
+    manager.montageStore.selectModel(id);
   };
 
-  const handlePointerUp = (e) => {
+  const handlePointerMove = (e: React.PointerEvent) => {
     e.stopPropagation();
-    manager.montageStore.stopDragging();
-  };
-
-  const handlePointerMove = (e) => {
-    e.stopPropagation();
-    if (manager.montageStore.isDragging) {
+    if (
+      manager.montageStore.isDragging &&
+      manager.montageStore.selectedModelId === id
+    ) {
       const hit = performRaycastFromMouse(
         e,
         camera,
         gl,
         manager.montageStore.planeRef
       );
-      manager.montageStore.handleDrag(hit);
+      if (hit) {
+        manager.montageStore.handleDrag(hit);
+      }
     }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    e.stopPropagation();
+    manager.montageStore.stopDragging();
   };
 
   return (
     <group
-      position={model?.position}
+      position={[
+        model?.position.x || 0,
+        model?.position.y || 0,
+        model?.position.z || 0,
+      ]}
       ref={groupRef}
       onClick={handleClick}
       onPointerOver={handlePointerOver}
@@ -297,12 +318,17 @@ const Model = observer(({ id, path, position }) => {
       <BoundingBox
         boundingBox={boundingBox}
         isSelected={manager.montageStore.selectedModelId === id}
-        cornerSpheres={manager.montageStore.selectedModelCorners}
+        cornerSpheres={
+          manager.montageStore.selectedModelId === id
+            ? manager.montageStore.selectedModelCorners
+            : []
+        }
         onDown={onDown}
         onMove={onMove}
         onUp={onUp}
       />
       <HoverEffects boundingBox={boundingBox} isHovered={isHovered} />
+      {showControls && <HtmlList modelId={id} />}
     </group>
   );
 });
