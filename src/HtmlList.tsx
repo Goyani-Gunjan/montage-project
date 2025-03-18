@@ -97,7 +97,7 @@ const HtmlList = observer(
     };
 
     return (
-      <Html position={[0, 10, -3.3]} center>
+      <Html position={[0, 5, -3.3]} center>
         <div style={styles.container} onClick={(e) => e.stopPropagation()}>
           <button
             style={styles.customButton}

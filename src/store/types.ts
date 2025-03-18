@@ -21,4 +21,5 @@ export interface ModelData {
   processed?: boolean;
   boundingBox?: THREE.Box3;
   rotation: THREE.Euler;
+  showControls?: boolean; 
 }

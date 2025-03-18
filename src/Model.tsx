@@ -14,7 +14,6 @@ import { performRaycastFromMouse } from "./utils/utils";
 
 const Model = observer(({ id, path, position }) => {
   const manager = new Manager();
-  const [showControls, setShowControls] = useState(false);
   const groupRef = useRef();
   const [isHovered, setIsHovered] = useState(false);
 
@@ -43,6 +42,7 @@ const Model = observer(({ id, path, position }) => {
   const handleClick = (e: React.PointerEvent) => {
     e.stopPropagation();
     manager.montageStore.selectModel(id);
+    manager.montageStore.toggleShowControls(id, true);
   };
 
   const handlePointerOver = (e: React.PointerEvent) => {
@@ -89,11 +89,6 @@ const Model = observer(({ id, path, position }) => {
     manager.montageStore.stopDragging();
   };
 
-  useEffect(() => {
-    const isSelected = manager.montageStore.selectedModelId === id;
-    setShowControls(isSelected);
-  }, [manager.montageStore.selectedModelId, id]);
-
   return (
     <group
       position={[
@@ -124,7 +119,7 @@ const Model = observer(({ id, path, position }) => {
         onUp={onUp}
       />
       <HoverEffects boundingBox={boundingBox} isHovered={isHovered} />
-      {showControls && <HtmlList modelId={id} />}
+      {model?.showControls && <HtmlList modelId={id} />}
     </group>
   );
 });

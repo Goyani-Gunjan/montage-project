@@ -12,7 +12,6 @@ class MontageStore {
   selectedModelId: string | null = null;
   planeRef: THREE.Mesh | null = null;
   isDragging: boolean | null = null;
-  showControls: boolean = false; 
   constructor(libState: Manager) {
     this.manager = libState;
     makeAutoObservable(this);
@@ -35,9 +34,6 @@ class MontageStore {
       this.models.push(newModel);
     }
   }
-  toggleShowControls = (value: boolean) => {
-    this.showControls = value;
-  };
 }
 
 export default MontageStore;

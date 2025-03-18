@@ -14,6 +14,12 @@ import Model from "./Model";
 const App = observer(() => {
   const manager = new Manager();
 
+  const handlePointerMissed = () => {
+    manager.montageStore.toggleShowControls(
+      manager.montageStore.selectedModelId,
+      false
+    );
+  };
   return (
     <div style={{ height: "100vh", width: "100vw", position: "relative" }}>
       <button
@@ -32,7 +38,7 @@ const App = observer(() => {
         Toggle to {manager.montageStore.is3D ? "2D" : "3D"} View
       </button>
 
-      <Canvas shadows onPointerMissed={() => console.log("missed")}>
+      <Canvas shadows onPointerMissed={() => handlePointerMissed()}>
         <Suspense fallback={null}>
           <ambientLight intensity={1} />
           <directionalLight position={[5, 5, 5]} intensity={1} />

@@ -98,7 +98,12 @@ export const MontageStoreActions = (store: any) => ({
       console.warn("Model not found:", id);
       return;
     }
-
+    if (store.selectedModelId) {
+      const previousModel = store.models.find((model: ModelData) => model.id === store.selectedModelId);
+      if (previousModel) {
+        previousModel.showControls = false;
+      }
+    }
     store.selectedModelId = id;
 
     if (model.boundingBox) {
@@ -106,6 +111,8 @@ export const MontageStoreActions = (store: any) => ({
     } else {
       store.selectedModelCorners = [];
     }
+
+    model.showControls = true;
   }),
 
   deleteModel: action((id: string) => {
@@ -124,5 +131,12 @@ export const MontageStoreActions = (store: any) => ({
     store.models.splice(modelIndex, 1);
 
     console.log(`Model ${id} deleted successfully`);
+  }),
+
+  toggleShowControls: action((modelId: string, value: boolean) => {
+    const model = store.models.find((model: ModelData) => model.id === modelId);
+    if (model) {
+      model.showControls = value;
+    }
   }),
 });
