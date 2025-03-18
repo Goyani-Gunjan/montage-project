@@ -32,7 +32,7 @@ const App = observer(() => {
         Toggle to {manager.montageStore.is3D ? "2D" : "3D"} View
       </button>
 
-      <Canvas shadows>
+      <Canvas shadows onPointerMissed={() => console.log("missed")}>
         <Suspense fallback={null}>
           <ambientLight intensity={1} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
