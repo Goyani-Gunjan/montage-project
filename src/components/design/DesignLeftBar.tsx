@@ -7,7 +7,7 @@ const DesignLeftBar = () => {
   const [isListView, setIsListView] = useState(false); // Track view state
 
   return (
-    <div className="fixed top-16 w-64 bg-white p-4 shadow-md h-[calc(100vh-4rem)] mt-3 flex flex-col">
+    <div className="fixed top-16 w-64 bg-gray-100 p-4 shadow-md h-[calc(100vh-4rem)] mt-3 flex flex-col">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold">Design</h2>
         <div className="flex space-x-2">

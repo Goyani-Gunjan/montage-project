@@ -29,12 +29,13 @@ const RightBar = () => {
   const fetchStyles = async () => {
     const token: string | null = Cookies.get("token") ?? null;
     const response = await fetchGet<Style[]>("/styles", token);
+    console.log(response);
 
     if (response.success) {
       setStyles(response.data);
 
       const defaultSelectedMaterials: { [key: number]: Material } = {};
-      response.data.forEach((style) => {
+      response?.data?.forEach((style) => {
         style.subStyleList.forEach((subStyle) => {
           if (subStyle.materialList.length > 0) {
             defaultSelectedMaterials[subStyle.id] = subStyle.materialList[0];
@@ -59,7 +60,7 @@ const RightBar = () => {
   };
 
   return (
-    <div className="w-85 bg-white p-4 shadow-lg border-l border-gray-200 h-screen overflow-y-auto fixed right-0">
+    <div className="w-85 bg-white p-4 pb-36 shadow-lg border-l border-gray-200 h-screen overflow-y-auto fixed right-0">
       <div className="flex items-center justify-center mb-4 mt-3">
         <h2 className="text-lg font-semibold text-center">
           0 Bed 0.5 Bath 256 sqft
@@ -130,6 +131,17 @@ const RightBar = () => {
       ) : (
         <p className="text-center text-gray-500">No sub-styles available.</p>
       )}
+      <div className="w-85 fixed bottom-0 right-0 bg-gray-100 px-6 py-4 border-t border-gray-200 flex justify-between items-center">
+        <div className="flex flex-col">
+          <div className="text-lg font-semibold">$64,000</div>
+          <p className="text-gray-700 text-xs">Estimated Construction Cost</p>
+        </div>
+        <div className="">
+          <button className="bg-black text-md text-white py-2 px-3 rounded cursor-pointer">
+            Order Now
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

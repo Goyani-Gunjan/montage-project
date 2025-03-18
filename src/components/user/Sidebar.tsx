@@ -25,11 +25,11 @@ const Sidebar: React.FC<SidebarProps> = ({ setActiveSidebar }) => {
       {menuItems.map((item) => (
         <div
           key={item.name}
-          className="flex flex-col items-center text-sm hover:bg-gray-300 cursor-pointer"
+          className="flex flex-col items-center text-sm hover:bg-gray-300 cursor-pointer "
           onClick={() => setActiveSidebar(item.name as "Design" | "Modules")}
         >
           {item.icon}
-          <span>{item.name}</span>
+          <span className="m-2">{item.name}</span>
         </div>
       ))}
     </div>

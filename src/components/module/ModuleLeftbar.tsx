@@ -23,7 +23,7 @@ const ModuleLeftbar = () => {
 
   useEffect(() => {
     const fetchModules = async () => {
-      const token: string | null = Cookies.get("token") ?? null;
+      const token: string = Cookies.get("token");
 
       const response = await fetchGet<Module[]>("/modules", token);
 
@@ -49,7 +49,7 @@ const ModuleLeftbar = () => {
     }
   };
   return (
-    <div className="w-90 p-4 text-black bg-gray-100 h-screen overflow-y-auto fixed top-16">
+    <div className="w-80 p-4 text-black bg-gray-100 h-screen overflow-y-auto fixed top-16">
       <h1 className="text-lg font-semibold mt-2">Modules</h1>
       <hr className=" border border-gray-200" />
 
