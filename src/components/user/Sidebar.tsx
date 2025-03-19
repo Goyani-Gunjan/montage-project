@@ -21,7 +21,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setActiveSidebar }) => {
     },
   ];
   return (
-    <div className="fixed left-0 top-[72px] h-screen w-20 p-4 bg-gray-100 shadow-md flex flex-col items-center pt-4 space-y-1 z-50">
+    <div className="fixed  h-screen p-4 bg-gray-100 shadow-md flex flex-col items-center pt-4 space-y-1">
       {menuItems.map((item) => (
         <div
           key={item.name}
