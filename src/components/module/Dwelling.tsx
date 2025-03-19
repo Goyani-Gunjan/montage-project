@@ -9,8 +9,8 @@ interface DwellingProps {
 const Dwelling = observer(({ searchValue }: DwellingProps) => {
   const filteredModules = UIStore.modules.filter(
     (module) =>
-      module.name.includes("Dwelling") && // Filter by module type
-      module.name.toLowerCase().includes(searchValue.toLowerCase()) // Filter by search value
+      module.name.includes("Dwelling") &&
+      module.name.toLowerCase().includes(searchValue.toLowerCase())
   );
 
   return (

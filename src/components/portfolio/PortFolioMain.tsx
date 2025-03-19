@@ -6,14 +6,16 @@ import {
   FaEllipsisH,
 } from "react-icons/fa";
 
-import List from "./PortFolioList";
-import Grid from "./PortFolioGrid";
+import PortFolioGrid from "./PortFolioGrid";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Button from "../user/Button";
 import RenamePopup from "./RenamePopup";
 import LeavePopup from "./LeavePopup";
-const PortFolioMain = () => {
+import PortfolioList from "./PortfolioList";
+import { observer } from "mobx-react-lite";
+
+const PortFolioMain = observer(() => {
   const navigate = useNavigate();
   const [view, setView] = useState<"grid" | "list">("list");
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
@@ -84,7 +86,7 @@ const PortFolioMain = () => {
         )}
       </div>
 
-      {view === "grid" ? <Grid /> : <List />}
+      {view === "grid" ? <PortFolioGrid /> : <PortfolioList />}
 
       <button
         className="bg-black text-white px-4 py-2 rounded-full flex items-center gap-2 fixed bottom-6 right-6 shadow-lg cursor-pointer"
@@ -99,6 +101,6 @@ const PortFolioMain = () => {
       {isLeaveOpen && <LeavePopup onClose={() => setIsLeaveOpen(false)} />}
     </main>
   );
-};
+});
 
 export default PortFolioMain;

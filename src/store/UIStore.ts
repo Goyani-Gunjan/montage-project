@@ -1,5 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { toJS } from "mobx";
+import * as THREE from "three";
 
 interface Module {
   id: number;
@@ -19,7 +20,7 @@ interface Design {
   monogramImage: string;
 }
 
-interface Portfolio {
+export interface Portfolio {
   portfolioId: string;
   id: string;
   name: string;
@@ -36,6 +37,9 @@ interface Portfolio {
 class UIStore {
   modules: Module[] = [];
   portfolios: Portfolio[] = [];
+  textures: { [key: string]: THREE.Texture } = {};
+  selectedModules: Module[] = [];
+  selectedPortfolioId: string = "";
   constructor() {
     makeAutoObservable(this);
   }
@@ -44,8 +48,28 @@ class UIStore {
     this.modules = data;
   }
   setPortfolios(data: Portfolio[]) {
-    this.portfolios = data;
+    this.portfolios = data || [];
     console.log(toJS(this.portfolios));
+  }
+  setTexture(url: string, texture: THREE.Texture) {
+    this.textures[url] = texture;
+    console.log(this.textures[url]);
+  }
+
+  addSelectedModule(module: Module) {
+    this.selectedModules.push(module);
+    console.log(toJS(this.selectedModules));
+  }
+
+  setSelectedPortfolioId(id: string) {
+    this.selectedPortfolioId = id;
+  }
+
+  get totalPrice() {
+    return this.selectedModules.reduce(
+      (total, module) => total + module.pricePerSqft,
+      0
+    );
   }
 }
 

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { fetchGet } from "../../utils/FetchApi";
+import { loadTexture } from "../../utils/Loader";
+import OrderButton from "./OrderButoon";
 
 interface Material {
   id: number;
@@ -37,6 +39,7 @@ const RightBar = () => {
       response?.data?.subStyleList.forEach((subStyle) => {
         if (subStyle.materialList.length > 0) {
           defaultSelectedMaterials[subStyle.id] = subStyle.materialList[0];
+          loadTexture(subStyle.materialList[0].imageURL);
         }
       });
       setSelectedMaterials(defaultSelectedMaterials);
@@ -54,6 +57,7 @@ const RightBar = () => {
       ...prev,
       [subStyleId]: material,
     }));
+    loadTexture(material.imageURL);
   };
 
   return (
@@ -68,7 +72,6 @@ const RightBar = () => {
         {styles?.subStyleList?.length > 0 ? (
           styles.subStyleList.map((subStyle) => (
             <div key={subStyle.id} className="mb-6">
-              {/* Large Image (First material or selected material) */}
               <div className="w-full h-50 bg-gray-200 rounded flex items-center justify-center relative mt-5">
                 {subStyle.materialList.length > 0 && (
                   <img
@@ -85,7 +88,6 @@ const RightBar = () => {
                 {subStyle.name}
               </h3>
 
-              {/* Material List (Thumbnails) */}
               <div className="flex gap-2 flex-wrap justify-center mt-3">
                 {subStyle.materialList.length > 0 ? (
                   subStyle.materialList.map((material) => (
@@ -111,8 +113,6 @@ const RightBar = () => {
                   </p>
                 )}
               </div>
-
-              {/* Selected Material Name & Price */}
               {subStyle.materialList.length > 0 && (
                 <div className="text-center mt-2">
                   <p className="text-sm font-medium">
@@ -132,17 +132,7 @@ const RightBar = () => {
           <p className="text-center text-gray-500">No sub-styles available.</p>
         )}
       </div>
-      <div className="w-85 fixed bottom-0 right-0 bg-gray-100 px-6 py-4 border-t border-gray-200 flex justify-between items-center">
-        <div className="flex flex-col">
-          <div className="text-lg font-semibold">$64,000</div>
-          <p className="text-gray-700 text-xs">Estimated Construction Cost</p>
-        </div>
-        <div className="">
-          <button className="bg-black text-md text-white py-2 px-3 rounded cursor-pointer">
-            Order Now
-          </button>
-        </div>
-      </div>
+      <OrderButton />
     </div>
   );
 };

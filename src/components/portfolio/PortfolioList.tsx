@@ -12,24 +12,27 @@ type Design = {
 
 const PortfolioList = observer(() => {
   const portfolios = UIStore.portfolios;
+  const selectedPortfolioId = UIStore.selectedPortfolioId;
 
-  const designs: Design[] = portfolios.flatMap((portfolio) =>
-    portfolio.designs.map((design) => ({
-      name: design.name,
-      created: new Date(portfolio.createdAt).toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }),
-      modules: 3,
-      updated: new Date(portfolio.updatedAt).toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }),
-      image: design.designImage,
-    }))
-  );
+  const filteredDesigns: Design[] = portfolios
+    .filter((portfolio) => portfolio.id === selectedPortfolioId)
+    .flatMap((portfolio) =>
+      portfolio.designs.map((design) => ({
+        name: design.name,
+        created: new Date(portfolio.createdAt).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
+        modules: 3, // Assuming a fixed value for modules
+        updated: new Date(portfolio.updatedAt).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
+        image: design.designImage,
+      }))
+    );
 
   return (
     <>
@@ -43,7 +46,7 @@ const PortfolioList = observer(() => {
 
       <div className="mt-5 ">
         <div className="space-y-2">
-          {designs.map((design, index) => (
+          {filteredDesigns.map((design, index) => (
             <div
               key={index}
               className="flex justify-between p-2 border border-gray-400 rounded-lg bg-gray-50"

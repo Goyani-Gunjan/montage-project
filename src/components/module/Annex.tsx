@@ -13,12 +13,17 @@ const Annex = observer(({ searchValue }: AnnexProps) => {
       module.name.toLowerCase().includes(searchValue.toLowerCase())
   );
 
+  const handleModuleClick = (module: any) => {
+    UIStore.addSelectedModule(module);
+  };
+
   return (
     <div className="space-y-4 flex-1 p-1">
       {filteredModules.map((module) => (
         <div
           key={module.id}
           className="relative w-full rounded flex flex-col items-start group bg-white hover:border hover:border-gray-500 border border-gray-300"
+          onClick={() => handleModuleClick(module)}
         >
           <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <button className="p-2 rounded cursor-pointer hover:bg-gray-200">
