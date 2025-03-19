@@ -1,14 +1,39 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import montageLogo from "../../assets/cineapp.png";
+
 import { signupValidationSchema } from "../../schema/Schema";
+import { fetchPost } from "../../utils/FetchApi";
+import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
+  const navigate = useNavigate();
+  const handleSignup = async (values: {
+    fullName: string;
+    email: string;
+    password: string;
+  }) => {
+    const response = await fetchPost(
+      "/register",
+      "POST",
+      JSON.stringify(values)
+    );
+    if (response.success) {
+      console.log("Signup Successful:", response.data);
+      alert("Account created successfully!");
+    } else {
+      console.error("Signup Failed:", response.message);
+      alert(response.message || "Signup failed");
+    }
+  };
+
+  const handleLoginRoute = () => {
+    navigate("/login");
+  };
+
   return (
     <div className="flex min-h-screen">
-      {/* Left Side Panel */}
       <div className="w-1/5 bg-blue-900 text-white p-8 flex flex-col justify-center">
         <div className="mb-8 flex items-center space-x-2">
-          <img src={montageLogo} alt="Montage Logo" className="h-8" />
+          <img src="assets/cinapp.png" alt="Montage Logo" className="h-8" />
           <span className="text-xl font-semibold">Montage</span>
         </div>
         <div className="mb-8">
@@ -49,7 +74,6 @@ const Signup = () => {
         </ul>
       </div>
 
-      {/* Right Side Form */}
       <div className="flex-1 flex justify-center items-center">
         <div className="w-96 bg-white p-8 rounded-lg shadow-md">
           <h2 className="text-2xl font-bold text-center">
@@ -64,9 +88,7 @@ const Signup = () => {
               password: "",
             }}
             validationSchema={signupValidationSchema}
-            onSubmit={(values) => {
-              console.log("Form Submitted", values);
-            }}
+            onSubmit={handleSignup}
           >
             <Form className="mt-4">
               <div className="mb-4 flex flex-col space-y-2">
@@ -147,8 +169,13 @@ const Signup = () => {
               </div>
 
               <div className="mb-4 flex items-center">
-                <Field type="checkbox" name="terms" className="mr-2" />
-                <span className="text-sm">
+                <Field
+                  type="checkbox"
+                  name="terms"
+                  id="terms"
+                  className="mr-2"
+                />
+                <label htmlFor="terms" className="text-sm">
                   I agree to the Montage{" "}
                   <a href="#" className="text-blue-500">
                     Terms of Service
@@ -158,22 +185,22 @@ const Signup = () => {
                     Privacy Policy
                   </a>
                   .
-                </span>
+                </label>
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-gray-400 text-white p-2 rounded cursor-not-allowed"
-                disabled
+                className="w-full bg-black text-white p-2 rounded  cursor-pointer"
+                onClick={handleLoginRoute}
               >
                 Create Account
               </button>
 
               <p className="text-center text-sm mt-4">
                 Already have an account?{" "}
-                <a href="#" className="text-blue-500">
+                <Link to="/login" className="text-blue-500">
                   Log In
-                </a>
+                </Link>
               </p>
             </Form>
           </Formik>
