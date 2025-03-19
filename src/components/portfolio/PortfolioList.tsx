@@ -1,4 +1,6 @@
+import { observer } from "mobx-react";
 import { FaEllipsisH } from "react-icons/fa";
+import UIStore from "../../store/UIStore";
 
 type Design = {
   name: string;
@@ -8,35 +10,45 @@ type Design = {
   image: string;
 };
 
-export default function PortfolioList() {
-  const designs: Design[] = [
-    {
-      name: "Home-Model-1",
-      created: "01 June 2023",
+const PortfolioList = observer(() => {
+  const portfolios = UIStore.portfolios;
+
+  const designs: Design[] = portfolios.flatMap((portfolio) =>
+    portfolio.designs.map((design) => ({
+      name: design.name,
+      created: new Date(portfolio.createdAt).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
       modules: 3,
-      updated: "08 June 2023",
-      image: "/assets/cineapp.png",
-    },
-  ];
+      updated: new Date(portfolio.updatedAt).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+      image: design.designImage,
+    }))
+  );
 
   return (
     <>
-      <div className="flex justify-between text-center font-semibold text-gray-700 border-b pb-2 mb-2">
-        <p>Design</p>
-        <div className="flex space-x-8 mr-5">
+      <div className="flex justify-between font-semibold text-gray-700 border-b pb-2 pr-7 mb-2">
+        <p className="w-3/4">Design</p>
+        <div className="w-1/4 flex space-x-18 mx-10">
           <p className="">Modules</p>
           <p>Date</p>
         </div>
       </div>
 
-      <div className="f-full bg-white mt-5 rounded-lg shadow-md ">
+      <div className="mt-5 ">
         <div className="space-y-2">
           {designs.map((design, index) => (
             <div
               key={index}
-              className="flex items-center justify-between p-4 border rounded-lg bg-gray-50"
+              className="flex justify-between p-2 border border-gray-400 rounded-lg bg-gray-50"
             >
-              <div className="flex items-center space-x-4">
+              <div className="w-3/4 flex space-x-4">
                 <img
                   src={design.image}
                   alt={design.name}
@@ -50,14 +62,14 @@ export default function PortfolioList() {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-5">
+              <div className="w-1/4 flex space-x-16 items-center">
                 <div className="text-center">
-                  <p className="font-medium">{design.modules}</p>
+                  <p className="font-medium text-center">{design.modules}</p>
                 </div>
                 <p className="flex text-sm text-gray-500 p-3">
                   {design.updated}
-                  <FaEllipsisH className="h-5 w-5 text-black cursor-pointer ml-2" />
                 </p>
+                <FaEllipsisH className="h-5 w-5 text-black cursor-pointer ml-2" />
               </div>
             </div>
           ))}
@@ -65,4 +77,6 @@ export default function PortfolioList() {
       </div>
     </>
   );
-}
+});
+
+export default PortfolioList;

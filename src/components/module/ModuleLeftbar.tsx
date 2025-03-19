@@ -20,6 +20,7 @@ interface Module {
 
 const ModuleLeftbar = () => {
   const [activeComponent, setActiveComponent] = useState("Annex");
+  const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
     const fetchModules = async () => {
@@ -39,17 +40,17 @@ const ModuleLeftbar = () => {
   const renderComponent = () => {
     switch (activeComponent) {
       case "Annex":
-        return <Annex />;
+        return <Annex searchValue={searchValue} />;
       case "Dwelling":
-        return <Dwelling />;
+        return <Dwelling searchValue={searchValue} />;
       case "Lifestyle":
-        return <LifeStyle />;
+        return <LifeStyle searchValue={searchValue} />;
       default:
-        return <Annex />;
+        return <Annex searchValue={searchValue} />;
     }
   };
   return (
-    <div className="w-80 p-4 text-black bg-gray-100 h-screen overflow-y-auto fixed top-16">
+    <div className="w-80 p-4 text-black bg-gray-100 fixed top-[72px] left-[80px]">
       <h1 className="text-lg font-semibold mt-2">Modules</h1>
       <hr className=" border border-gray-200" />
 
@@ -59,6 +60,11 @@ const ModuleLeftbar = () => {
           type="text"
           placeholder="Search Modules"
           className="bg-transparent text-black flex-1 outline-none px-2 text-sm w-auto"
+          value={searchValue}
+          onChange={(e) => {
+            console.log("Search Value in ModuleLeftbar:", e.target.value);
+            setSearchValue(e.target.value);
+          }}
         />
         <BsSliders size={20} className="cursor-pointer" />
       </div>
@@ -79,7 +85,9 @@ const ModuleLeftbar = () => {
       </div>
       <hr className=" border border-gray-200" />
 
-      <div className="space-y-4 flex-1 p-2 ">{renderComponent()}</div>
+      <div className="space-y-4 flex p-2 mt-3 h-[calc(100vh-16rem)] overflow-y-auto">
+        {renderComponent()}
+      </div>
     </div>
   );
 };

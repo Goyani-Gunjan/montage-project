@@ -1,12 +1,19 @@
 import { observer } from "mobx-react-lite";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import UIStore from "../../store/UIStore";
+interface LifestyleProps {
+  searchValue: string;
+}
 
-const Annex = observer(() => {
+const Annex = observer(({ searchValue }: LifestyleProps) => {
   return (
     <div className="space-y-4 flex-1 p-1">
       {UIStore.modules
-        .filter((module) => module.name.includes("Lifestyle"))
+        .filter(
+          (module) =>
+            module.name.includes("Lifestyle") &&
+            module.name.toLowerCase().includes(searchValue.toLowerCase())
+        )
         .map((module) => (
           <div
             key={module.id}
@@ -23,8 +30,8 @@ const Annex = observer(() => {
                 src={module.moduleImage}
                 className="w-full px-12 py-2 h-48 object-fit rounded-b"
               />
-              <h3 className="text-md mb-2 ml-2 font-semibold">{module.name}</h3>
-              <div className="flex justify-between w-full text-gray-700 text-xs space-x-2">
+              <h3 className="text-md   font-semibold">{module.name}</h3>
+              <div className="flex justify-between w-full text-gray-700 text-xs space-x-1">
                 <span> ${module.pricePerSqft}</span>
                 <span>{module.noOfBedrooms} Bathroom</span>
                 <span> {module.noOfBathrooms} Bedroom</span>

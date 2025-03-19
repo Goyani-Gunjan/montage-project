@@ -12,11 +12,11 @@ const DesignPage = () => {
   return (
     <div>
       <Navbar />
-      <div className="flex mt-16">
+      <div className="relative top-18 left-24 w-full flex">
         <Sidebar setActiveSidebar={setActiveSidebar} />
-        <div className="ml-16 flex h-[calc(100vh-4rem)] w-full">
+        <div className="flex h-[calc(100vh-4rem)] w-full">
           {activeSidebar === "Design" ? <DesignLeftBar /> : <ModuleLeftbar />}
-          <div className="flex-1 bg-gray-50 p-10 flex items-center justify-center"></div>
+          <div className="flex-1 bg-gray-50 p-5 flex items-center justify-center"></div>
           <RightBar />
         </div>
       </div>

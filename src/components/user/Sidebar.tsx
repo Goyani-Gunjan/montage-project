@@ -8,7 +8,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setActiveSidebar }) => {
   const menuItems = [
     {
       name: "Design",
-      icon: <FaPencilRuler className="text-gray-600 text-xl " />,
+      icon: <FaPencilRuler className="text-gray-600 text-xl" />,
     },
 
     {
@@ -21,11 +21,11 @@ const Sidebar: React.FC<SidebarProps> = ({ setActiveSidebar }) => {
     },
   ];
   return (
-    <div className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-18 bg-gray-100 shadow-md flex flex-col items-center pt-10 space-y-6">
+    <div className="fixed left-0 top-[72px] h-screen w-20 p-4 bg-gray-100 shadow-md flex flex-col items-center pt-4 space-y-1 z-50">
       {menuItems.map((item) => (
         <div
           key={item.name}
-          className="flex flex-col items-center text-sm hover:bg-gray-300 cursor-pointer "
+          className="flex flex-col items-center h-16 w-20 pt-3 text-sm hover:bg-gray-300 cursor-pointer "
           onClick={() => setActiveSidebar(item.name as "Design" | "Modules")}
         >
           {item.icon}
