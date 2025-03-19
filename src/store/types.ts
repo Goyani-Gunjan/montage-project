@@ -1,5 +1,12 @@
 import * as THREE from "three";
-
+export interface Node {
+  id: string;
+  name: string;
+  startPoint: THREE.Vector3;
+  endPoint: THREE.Vector3;
+  principalAxis?: string;
+  center: THREE.Vector3;
+}
 export interface MeshData {
   id: string;
   name: string;
@@ -21,5 +28,6 @@ export interface ModelData {
   processed?: boolean;
   boundingBox?: THREE.Box3;
   rotation: THREE.Euler;
-  showControls?: boolean; 
+  showControls?: boolean;
+  nodes: Node[];
 }

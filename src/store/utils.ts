@@ -1,9 +1,15 @@
-
 import { ModelData } from "./types";
-
 export const processMeshesForModel = (model: ModelData, is3D: boolean) => {
   model.meshes.forEach((mesh) => {
     if (mesh) {
+      // const geometry = mesh.geometry.clone();
+      // geometry.applyMatrix4(new THREE.Matrix4().copy(mesh.matrix));
+
+      // const scaleMat = new THREE.Matrix4().makeScale(...scale);
+      // geometry.applyMatrix4(scaleMat);
+      // geometry.computeBoundingBox();
+      // geometry.computeBoundingSphere();
+
       if (is3D) {
         if (mesh.name.includes("Node")) {
           if (!mesh.processed) {

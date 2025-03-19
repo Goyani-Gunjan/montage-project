@@ -1,6 +1,6 @@
 // Model.js
 import { observer } from "mobx-react";
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import Manager from "./store/Manager";
 import ModelRenderer from "./ModelRenderer";
@@ -90,37 +90,48 @@ const Model = observer(({ id, path, position }) => {
   };
 
   return (
-    <group
-      position={[
-        model?.position.x || 0,
-        model?.position.y || 0,
-        model?.position.z || 0,
-      ]}
-      ref={groupRef}
-      onClick={handleClick}
-      onPointerOver={handlePointerOver}
-      onPointerOut={handlePointerOut}
-      rotation={model?.rotation}
-      onPointerUp={handlePointerUp}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-    >
-      <ModelRenderer meshes={meshes} manager={manager} />
-      <BoundingBox
-        boundingBox={boundingBox}
-        isSelected={manager.montageStore.selectedModelId === id}
-        cornerSpheres={
-          manager.montageStore.selectedModelId === id
-            ? manager.montageStore.selectedModelCorners
-            : []
-        }
-        onDown={onDown}
-        onMove={onMove}
-        onUp={onUp}
-      />
-      <HoverEffects boundingBox={boundingBox} isHovered={isHovered} />
-      {model?.showControls && <HtmlList modelId={id} />}
-    </group>
+    <>
+      <group
+        position={[
+          model?.position.x || 0,
+          model?.position.y || 0,
+          model?.position.z || 0,
+        ]}
+        ref={groupRef}
+        onClick={handleClick}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
+        rotation={model?.rotation}
+        onPointerUp={handlePointerUp}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+      >
+        <ModelRenderer meshes={meshes} manager={manager} />
+        <BoundingBox
+          boundingBox={boundingBox}
+          isSelected={manager.montageStore.selectedModelId === id}
+          cornerSpheres={
+            manager.montageStore.selectedModelId === id
+              ? manager.montageStore.selectedModelCorners
+              : []
+          }
+          onDown={onDown}
+          onMove={onMove}
+          onUp={onUp}
+        />
+        <HoverEffects boundingBox={boundingBox} isHovered={isHovered} />
+        {model?.showControls && <HtmlList modelId={id} />}
+      </group>
+
+      {model?.nodes.map((node, index) => (
+        <>
+          <mesh position={[node.center.x, 4, node.center.z]} key={index}>
+            <sphereGeometry args={[0.1, 32, 32]} />
+            <meshBasicMaterial color="red" />
+          </mesh>
+        </>
+      ))}
+    </>
   );
 });
 

@@ -16,7 +16,6 @@ class MontageStore {
     this.manager = libState;
     makeAutoObservable(this);
 
-    // Bind actions
     Object.assign(this, MontageStoreActions(this));
   }
 
@@ -28,9 +27,9 @@ class MontageStore {
     const model = this.models.find((model) => model.id === modelId);
     if (model) {
       const newModel = { ...model, id: `${model.id}-${Date.now()}-copy` };
-      const offset = new THREE.Vector3(1, 0, 1); 
+      const offset = new THREE.Vector3(1, 0, 1);
       newModel.position = model.position.clone().add(offset);
-  
+
       this.models.push(newModel);
     }
   }

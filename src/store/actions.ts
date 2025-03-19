@@ -16,10 +16,19 @@ export const MontageStoreActions = (store: any) => ({
   }),
 
   loadModel: action((id: string, path: string, position: THREE.Vector3) => {
-    const existingModel = store.models.find((model: ModelData) => model.id === id);
+    const existingModel = store.models.find(
+      (model: ModelData) => model.id === id
+    );
 
     if (!existingModel) {
-      store.models.push({ id, path, position, meshes: [], rotation: new THREE.Euler(0, 0, 0) });
+      store.models.push({
+        id,
+        path,
+        position,
+        meshes: [],
+        nodes: [],
+        rotation: new THREE.Euler(0, 0, 0),
+      });
     }
   }),
 
@@ -42,6 +51,13 @@ export const MontageStoreActions = (store: any) => ({
     }
   }),
 
+  storeNodesForModel: action((id: string, nodes: any[]) => {
+    const model = store.models.find((model: ModelData) => model.id === id);
+    if (model) {
+      model.nodes = nodes;
+    }
+  }),
+
   processMeshesForAllModels: action(() => {
     store.models.forEach((model: ModelData) => {
       processMeshesForModel(model, store.is3D);
@@ -50,9 +66,57 @@ export const MontageStoreActions = (store: any) => ({
 
   handleDrag: action((point: THREE.Vector3) => {
     if (store.isDragging && store.selectedModelId && point) {
-      const model = store.models.find((m: ModelData) => m.id === store.selectedModelId);
+      const model = store.models.find(
+        (m: ModelData) => m.id === store.selectedModelId
+      );
+
       if (model) {
-        model.position = new THREE.Vector3(point.x, point.y, point.z);
+        const delta = new THREE.Vector3().subVectors(point, model.position);
+
+        model.position.copy(point);
+
+        model.nodes.forEach((node) => {
+          node.center.add(delta);
+        });
+
+        const snappingThreshold = 4;
+        let snapped = false;
+
+        const modelNodes = model.nodes;
+
+        for (let i = 0; i < store.models.length && !snapped; i++) {
+          const otherModel = store.models[i];
+
+          if (otherModel.id === model.id) continue;
+
+          const otherModelNodes = otherModel.nodes;
+
+          for (let j = 0; j < otherModelNodes.length && !snapped; j++) {
+            const otherNode = otherModelNodes[j];
+
+            for (let k = 0; k < modelNodes.length && !snapped; k++) {
+              const node = modelNodes[k];
+
+              const distance = node.center.distanceTo(otherNode.center);
+
+              if (distance <= snappingThreshold) {
+                const offset = new THREE.Vector3().subVectors(
+                  otherNode.center,
+                  node.center
+                );
+
+                model.position.add(offset);
+
+                modelNodes.forEach((node) => {
+                  node.center.add(offset);
+                });
+
+                snapped = true;
+                break;
+              }
+            }
+          }
+        }
       }
     }
   }),
@@ -99,7 +163,9 @@ export const MontageStoreActions = (store: any) => ({
       return;
     }
     if (store.selectedModelId) {
-      const previousModel = store.models.find((model: ModelData) => model.id === store.selectedModelId);
+      const previousModel = store.models.find(
+        (model: ModelData) => model.id === store.selectedModelId
+      );
       if (previousModel) {
         previousModel.showControls = false;
       }
@@ -116,7 +182,9 @@ export const MontageStoreActions = (store: any) => ({
   }),
 
   deleteModel: action((id: string) => {
-    const modelIndex = store.models.findIndex((model: ModelData) => model.id === id);
+    const modelIndex = store.models.findIndex(
+      (model: ModelData) => model.id === id
+    );
 
     if (modelIndex === -1) {
       console.warn("Model not found for deletion:", id);
