@@ -124,12 +124,10 @@ const Model = observer(({ id, path, position }) => {
       </group>
 
       {model?.nodes.map((node, index) => (
-        <>
-          <mesh position={[node.center.x, 4, node.center.z]} key={index}>
-            <sphereGeometry args={[0.1, 32, 32]} />
-            <meshBasicMaterial color="red" />
-          </mesh>
-        </>
+        <mesh position={[node.center.x, 4, node.center.z]} key={index}>
+          <sphereGeometry args={[0.1, 32, 32]} />
+          <meshBasicMaterial color="red" />
+        </mesh>
       ))}
     </>
   );

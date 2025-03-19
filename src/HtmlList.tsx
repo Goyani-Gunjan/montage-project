@@ -4,6 +4,7 @@ import { BsThreeDots, BsTrash, BsFiles, BsLock } from "react-icons/bs";
 import { useState } from "react";
 import Manager from "./store/Manager";
 import { observer } from "mobx-react";
+import { useThree } from "@react-three/fiber";
 
 enum DropdownAction {
   Delete = "Delete",
@@ -23,9 +24,42 @@ const HtmlList = observer(
   ({ onFlipHorizontal, onFlipVertical, modelId }: HtmlListProps) => {
     const montageStore = manager.montageStore;
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const { gl, scene, camera } = useThree();
+
     const toggleDropdown = (e: React.PointerEvent) => {
       e.stopPropagation();
       setIsDropdownOpen((prev) => !prev);
+    };
+
+    const takeSnapShot = () => {
+      const htmlElements = document.querySelectorAll('[data-html="true"]');
+      const originalVisibility: boolean[] = [];
+
+      htmlElements.forEach((el, index) => {
+        originalVisibility[index] = el.classList.contains("visible");
+        el.classList.remove("visible");
+        el.classList.add("hidden");
+      });
+
+      gl.render(scene, camera);
+
+      const dataUrl = gl.domElement.toDataURL("image/png");
+
+      htmlElements.forEach((el, index) => {
+        el.classList.remove("hidden");
+        if (originalVisibility[index]) {
+          el.classList.add("visible");
+        }
+      });
+
+      gl.render(scene, camera);
+
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = "screenshot.png";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     };
 
     const handleDropdownAction =
@@ -117,6 +151,10 @@ const HtmlList = observer(
             }}
           >
             <RiFlipVerticalFill size={20} />
+          </button>
+
+          <button style={styles.customButton} onClick={takeSnapShot}>
+            SS
           </button>
 
           <button style={styles.customButton} onClick={toggleDropdown}>
