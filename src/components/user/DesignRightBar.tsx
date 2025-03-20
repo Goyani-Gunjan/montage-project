@@ -1,32 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Cookies from "js-cookie";
 import { fetchGet } from "../../utils/FetchApi";
 import { loadTexture } from "../../utils/Loader";
 import OrderButton from "./OrderButoon";
-
-interface Material {
-  id: number;
-  name: string;
-  imageURL: string;
-  price: number;
-}
-
-interface SubStyle {
-  id: number;
-  name: string;
-  materialList: Material[];
-}
-
-interface Style {
-  id: number;
-  subStyleList: SubStyle[];
-}
+import moduleStore, { Material, Style } from "../../store/UIStore";
 
 const RightBar = () => {
   const [styles, setStyles] = useState<Style | null>(null);
   const [selectedMaterials, setSelectedMaterials] = useState<{
     [key: number]: Material;
   }>({});
+  const isDataFetched = useRef(false); // Track if data is fetched
 
   const fetchStyles = async () => {
     const token: string | null = Cookies.get("token") ?? null;
@@ -34,11 +18,18 @@ const RightBar = () => {
 
     if (response.success) {
       setStyles(response.data);
+      moduleStore.setStyles(response.data);
+
+      console.log(response.data); // Log the entire response once
 
       const defaultSelectedMaterials: { [key: number]: Material } = {};
       response?.data?.subStyleList.forEach((subStyle) => {
         if (subStyle.materialList.length > 0) {
           defaultSelectedMaterials[subStyle.id] = subStyle.materialList[0];
+          moduleStore.setSelectedMaterial(
+            subStyle.id,
+            subStyle.materialList[0]
+          );
           loadTexture(subStyle.materialList[0].imageURL);
         }
       });
@@ -49,7 +40,10 @@ const RightBar = () => {
   };
 
   useEffect(() => {
-    fetchStyles();
+    if (!isDataFetched.current) {
+      fetchStyles();
+      isDataFetched.current = true; // Mark data as fetched
+    }
   }, []);
 
   const handleMaterialClick = (subStyleId: number, material: Material) => {
@@ -57,6 +51,7 @@ const RightBar = () => {
       ...prev,
       [subStyleId]: material,
     }));
+    moduleStore.setSelectedMaterial(subStyleId, material);
     loadTexture(material.imageURL);
   };
 

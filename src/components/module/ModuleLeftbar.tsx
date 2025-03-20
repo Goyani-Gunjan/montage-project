@@ -1,8 +1,6 @@
 import { IoSearchSharp } from "react-icons/io5";
 import { BsSliders } from "react-icons/bs";
-import Dwelling from "./Dwelling";
-import Annex from "./Annex";
-import LifeStyle from "./LifeStyle";
+import ModuleList from "./ModuleList";
 import { useEffect, useState } from "react";
 import { fetchGet } from "../../utils/FetchApi";
 import Cookies from "js-cookie";
@@ -37,18 +35,7 @@ const ModuleLeftbar = () => {
 
     fetchModules();
   }, []);
-  const renderComponent = () => {
-    switch (activeComponent) {
-      case "Annex":
-        return <Annex searchValue={searchValue} />;
-      case "Dwelling":
-        return <Dwelling searchValue={searchValue} />;
-      case "Lifestyle":
-        return <LifeStyle searchValue={searchValue} />;
-      default:
-        return <Annex searchValue={searchValue} />;
-    }
-  };
+
   return (
     <div className="w-80 p-4 text-black bg-gray-100 fixed top-[72px] left-[80px]">
       <h1 className="text-lg font-semibold mt-2">Modules</h1>
@@ -86,7 +73,7 @@ const ModuleLeftbar = () => {
       <hr className=" border border-gray-200" />
 
       <div className="space-y-4 flex p-2 mt-3 h-[calc(100vh-16rem)] overflow-y-auto">
-        {renderComponent()}
+        <ModuleList searchValue={searchValue} moduleType={activeComponent} />
       </div>
     </div>
   );

@@ -2,14 +2,15 @@ import { observer } from "mobx-react-lite";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import UIStore from "../../store/UIStore";
 
-interface AnnexProps {
+interface ModuleListProps {
   searchValue: string;
+  moduleType: string;
 }
 
-const Annex = observer(({ searchValue }: AnnexProps) => {
+const ModuleList = observer(({ searchValue, moduleType }: ModuleListProps) => {
   const filteredModules = UIStore.modules.filter(
     (module) =>
-      module.name.includes("Annex") &&
+      module.name.includes(moduleType) &&
       module.name.toLowerCase().includes(searchValue.toLowerCase())
   );
 
@@ -37,7 +38,7 @@ const Annex = observer(({ searchValue }: AnnexProps) => {
               className="w-full px-12 py-2 h-48 object-fit rounded-b"
             />
             <h3 className="text-md  font-semibold">{module.name}</h3>
-            <div className="flex justify-between w-full text-gray-700 text-xs space-x-2">
+            <div className="flex justify-between w-full text-gray-700 text-xs space-x-1">
               <span> ${module.pricePerSqft}</span>
               <span>{module.noOfBedrooms} Bathroom</span>
               <span> {module.noOfBathrooms} Bedroom</span>
@@ -50,4 +51,4 @@ const Annex = observer(({ searchValue }: AnnexProps) => {
   );
 });
 
-export default Annex;
+export default ModuleList;
