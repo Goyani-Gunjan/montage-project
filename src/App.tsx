@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
-  OrbitControls,
+  CameraControls,
   OrthographicCamera,
   PerspectiveCamera,
 } from "@react-three/drei";
@@ -66,7 +66,13 @@ const App = observer(() => {
           rotation={[-Math.PI / 2, 0, 0]}
           zoom={100}
         />
-        <OrbitControls enableRotate={manager.montageStore.is3D} />
+        <CameraControls
+          makeDefault
+          minZoom={20}
+          maxZoom={300}
+          azimuthRotateSpeed={manager.montageStore.is3D ? 1 : 0}
+          polarRotateSpeed={manager.montageStore.is3D ? 1 : 0}
+        />
       </Canvas>
 
       <Sidebar />

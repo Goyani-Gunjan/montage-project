@@ -23,6 +23,47 @@ class MontageStore {
     const model = this.models.find((model) => model.id === id);
     return model ? model.meshes : [];
   }
+  flipModelHorizontally(id: string) {
+    const model = this.models.find((model) => model.id === id);
+    if (model) {
+      model.scale = [-model.scale[0], model.scale[1], model.scale[2]];
+
+      const modelCenter = new THREE.Vector3(
+        model.position.x,
+        model.position.y,
+        model.position.z
+      );
+
+      model.nodes.forEach((node) => {
+        const offset = new THREE.Vector3().subVectors(node.center, modelCenter);
+
+        offset.x *= -1;
+
+        node.center.copy(modelCenter).add(offset);
+      });
+    }
+  }
+
+  flipModelVertically(id: string) {
+    const model = this.models.find((model) => model.id === id);
+    if (model) {
+      model.scale = [model.scale[0], model.scale[1], -model.scale[2]];
+
+      const modelCenter = new THREE.Vector3(
+        model.position.x,
+        model.position.y,
+        model.position.z
+      );
+
+      model.nodes.forEach((node) => {
+        const offset = new THREE.Vector3().subVectors(node.center, modelCenter);
+
+        offset.z *= -1;
+
+        node.center.copy(modelCenter).add(offset);
+      });
+    }
+  }
 }
 
 export default MontageStore;

@@ -31,4 +31,5 @@ export interface ModelData {
   showControls?: boolean;
   nodes: Node[];
   isLocked: boolean;
+  scale: [number, number, number];
 }

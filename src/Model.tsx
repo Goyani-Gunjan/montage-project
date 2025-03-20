@@ -98,6 +98,7 @@ const Model = observer(({ id, path, position }) => {
           model?.position.y || 0,
           model?.position.z || 0,
         ]}
+        scale={model?.scale}
         ref={groupRef}
         onClick={handleClick}
         onPointerOver={handlePointerOver}

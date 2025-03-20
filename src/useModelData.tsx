@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
 import Manager from "./store/Manager";
 import * as THREE from "three";
+
 export const useModelData = (id, path, position) => {
   const manager = new Manager();
 
@@ -26,6 +27,9 @@ export const useModelData = (id, path, position) => {
     const modelCenter = new THREE.Vector3();
     modelBox.getCenter(modelCenter);
 
+    const modelSize = new THREE.Vector3();
+    modelBox.getSize(modelSize);
+
     const parentInverseMatrix = new THREE.Matrix4()
       .copy(clonedScene.matrixWorld)
       .invert();
@@ -37,7 +41,6 @@ export const useModelData = (id, path, position) => {
           parentInverseMatrix,
           child.matrixWorld
         );
-
         const meshData = {
           id: `${child.name}_${Date.now()}`,
           name: child.name,
@@ -51,13 +54,13 @@ export const useModelData = (id, path, position) => {
           processed: false,
         };
 
-        if (child.name.toLowerCase().includes("node")) {
+        if (child.name.includes("Node")) {
           const nodeGeometry = child.geometry.clone();
           nodeGeometry.applyMatrix4(child.matrixWorld);
+
           const nodeBox = new THREE.Box3().setFromBufferAttribute(
             nodeGeometry.attributes.position
           );
-
           const nodeSize = new THREE.Vector3();
           nodeBox.getSize(nodeSize);
           const primaryAxis = nodeSize.x > nodeSize.z ? "x" : "z";
@@ -65,36 +68,32 @@ export const useModelData = (id, path, position) => {
           const nodeCenter = new THREE.Vector3();
           nodeBox.getCenter(nodeCenter);
 
-          const modelToNodeVector = new THREE.Vector3().subVectors(
-            nodeCenter,
-            modelCenter
-          );
-
-          let startPoint = new THREE.Vector3();
-          let endPoint = new THREE.Vector3();
-
-          const directionVector = new THREE.Vector3();
-          if (primaryAxis === "x") {
-            directionVector.set(1, 0, 0);
+          const perpendicularAxis = primaryAxis === "x" ? "z" : "x";
+          const boundaryCenter = new THREE.Vector3().copy(nodeCenter);
+          if (perpendicularAxis === "x") {
+            boundaryCenter.x =
+              nodeCenter.x > 0 ? modelSize.x / 2 : -modelSize.x / 2;
           } else {
-            directionVector.set(0, 0, 1);
+            boundaryCenter.z =
+              nodeCenter.z > 0 ? modelSize.z / 2 : -modelSize.z / 2;
           }
 
-          directionVector.applyQuaternion(
-            child.getWorldQuaternion(new THREE.Quaternion())
-          );
-
-          directionVector.normalize();
-
+          const directionVector =
+            primaryAxis === "x"
+              ? new THREE.Vector3(1, 0, 0)
+              : new THREE.Vector3(0, 0, 1);
           const halfLength =
             primaryAxis === "x" ? nodeSize.x / 2 : nodeSize.z / 2;
 
+          const startPoint = new THREE.Vector3();
+          const endPoint = new THREE.Vector3();
           startPoint
-            .copy(nodeCenter)
+            .copy(boundaryCenter)
             .sub(directionVector.clone().multiplyScalar(halfLength));
           endPoint
-            .copy(nodeCenter)
+            .copy(boundaryCenter)
             .add(directionVector.clone().multiplyScalar(halfLength));
+
           nodesArray.push({
             id: meshData.id,
             name: child.name,
@@ -108,12 +107,12 @@ export const useModelData = (id, path, position) => {
               y: endPoint.y,
               z: endPoint.z,
             },
-            center: nodeCenter.add(position),
+            center: boundaryCenter.add(position),
             dominantAxis: primaryAxis,
             modelToNode: {
-              x: modelToNodeVector.x,
-              y: modelToNodeVector.y,
-              z: modelToNodeVector.z,
+              x: nodeCenter.x - modelCenter.x,
+              y: nodeCenter.y - modelCenter.y,
+              z: nodeCenter.z - modelCenter.z,
             },
           });
         }
@@ -136,3 +135,5 @@ export const useModelData = (id, path, position) => {
 
   return tempMeshes;
 };
+
+export default useModelData;

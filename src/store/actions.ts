@@ -28,6 +28,7 @@ export const MontageStoreActions = (store: any) => ({
         nodes: [],
         rotation: new THREE.Euler(0, 0, 0),
         isLocked: false,
+        scale: [1, 1, 1],
       });
     }
   },
@@ -102,12 +103,6 @@ export const MontageStoreActions = (store: any) => ({
 
         model.nodes.forEach((node) => {
           node.center.add(delta);
-
-          // if (node.originalCenter) {
-          //   node.originalCenter.x += delta.x;
-          //   node.originalCenter.y += delta.y;
-          //   node.originalCenter.z += delta.z;
-          // }
         });
 
         const snappingThreshold = 4;
@@ -118,42 +113,30 @@ export const MontageStoreActions = (store: any) => ({
           const otherModel = store.models[i];
           if (otherModel.id === model.id) continue;
           const otherModelNodes = otherModel.nodes;
-          // const otherBoundingBox = otherModel.boundingBox;
 
-          // Check if the models are within snapping distance first
           for (let j = 0; j < otherModelNodes.length && !snapped; j++) {
             const otherNode = otherModelNodes[j];
             for (let k = 0; k < modelNodes.length && !snapped; k++) {
               const node = modelNodes[k];
-              const distance = node.center.distanceTo(otherNode.center);
 
-              if (distance <= snappingThreshold) {
-                // // Now check if their bounding boxes overlap
-                // if (model.boundingBox.intersectsBox(otherBoundingBox)) {
-                //   console.log("Bounding boxes overlap, stopping snapping");
-                //   // snapped = true;
-                //   break;
-                // }
+              if (node.dominantAxis === otherNode.dominantAxis) {
+                const distance = node.center.distanceTo(otherNode.center);
 
-                const offset = new THREE.Vector3().subVectors(
-                  otherNode.center,
-                  node.center
-                );
+                if (distance <= snappingThreshold) {
+                  const offset = new THREE.Vector3().subVectors(
+                    otherNode.center,
+                    node.center
+                  );
 
-                model.position.add(offset);
+                  model.position.add(offset);
 
-                modelNodes.forEach((node) => {
-                  node.center.add(offset);
+                  modelNodes.forEach((node) => {
+                    node.center.add(offset);
+                  });
 
-                  // if (node.originalCenter) {
-                  //   node.originalCenter.x += offset.x;
-                  //   node.originalCenter.y += offset.y;
-                  //   node.originalCenter.z += offset.z;
-                  // }
-                });
-
-                snapped = true;
-                break;
+                  snapped = true;
+                  break;
+                }
               }
             }
           }
@@ -320,6 +303,18 @@ export const MontageStoreActions = (store: any) => ({
     const model = store.models.find((model: ModelData) => model.id === modelId);
     if (model) {
       model.isLocked = !model.isLocked;
+    }
+  },
+  updateTextureForModel(texture: THREE.Texture, nameOfAppliedTexture: string) {
+    const model = store.models.find(
+      (model: ModelData) => model.id === store.selectedModelId
+    );
+    if (model) {
+      model.meshes.forEach((mesh: MeshData) => {
+        if (mesh.name.includes(nameOfAppliedTexture)) {
+          mesh.material.map = texture;
+        }
+      });
     }
   },
 });

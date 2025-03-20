@@ -5,7 +5,7 @@ import { useState } from "react";
 import Manager from "./store/Manager";
 import { observer } from "mobx-react";
 import { useThree } from "@react-three/fiber";
-
+import * as THREE from "three";
 enum DropdownAction {
   Delete = "Delete",
   Duplicate = "Duplicate",
@@ -32,6 +32,11 @@ const HtmlList = observer(({ modelId }: HtmlListProps) => {
     const htmlElements = document.querySelectorAll('[data-html="true"]');
     const originalVisibility: boolean[] = [];
 
+    const originalClearColor = new THREE.Color();
+    gl.getClearColor(originalClearColor);
+    const originalClearAlpha = gl.getClearAlpha();
+    gl.setClearColor("white", 1);
+
     htmlElements.forEach((el, index) => {
       originalVisibility[index] = el.classList.contains("visible");
       el.classList.remove("visible");
@@ -49,6 +54,7 @@ const HtmlList = observer(({ modelId }: HtmlListProps) => {
       }
     });
 
+    gl.setClearColor(originalClearColor, originalClearAlpha);
     gl.render(scene, camera);
 
     const link = document.createElement("a");
@@ -134,7 +140,7 @@ const HtmlList = observer(({ modelId }: HtmlListProps) => {
           style={styles.customButton}
           onClick={(e) => {
             e.stopPropagation();
-            onFlipHorizontal();
+            montageStore.flipModelHorizontally(modelId);
           }}
         >
           <RiFlipHorizontalFill size={20} />
@@ -144,7 +150,7 @@ const HtmlList = observer(({ modelId }: HtmlListProps) => {
           style={styles.customButton}
           onClick={(e) => {
             e.stopPropagation();
-            onFlipVertical();
+            montageStore.flipModelVertically(modelId);
           }}
         >
           <RiFlipVerticalFill size={20} />
