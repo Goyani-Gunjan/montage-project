@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaEllipsisH } from "react-icons/fa";
 import { observer } from "mobx-react-lite";
-import UIStore from "../../store/UIStore";
+import Manager from "../../store/Manager";
 
 interface Design {
   id: string;
@@ -26,15 +26,17 @@ interface Portfolio {
 }
 
 const PortFolioGrid = observer(() => {
+  const manager = new Manager();
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
 
   useEffect(() => {
-    setPortfolios(UIStore.portfolios);
-  }, [UIStore.portfolios]);
+    setPortfolios(manager.uiStore.portfolios);
+  }, [manager.uiStore.portfolios]);
 
   const filteredDesigns =
-    portfolios.find((portfolio) => portfolio.id === UIStore.selectedPortfolioId)
-      ?.designs || [];
+    portfolios.find(
+      (portfolio) => portfolio.id === manager.uiStore.selectedPortfolioId
+    )?.designs || [];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

@@ -8,18 +8,19 @@ import { Suspense, useState } from "react";
 import Manager from "../../store/Manager";
 import DesignLeftBar from "../design/DesignLeftBar";
 import Navbar from "../design/DesignNavbar";
-import ModuleLeftbar from "../module/ModuleLeftbar";
+import ModuleLeftbar from "../module/ModuleLeftBar";
 import RightBar from "./DesignRightBar";
 import Sidebar from "./Sidebar";
 import CanvasWithDrop from "../canvas/CanvasWithDrop";
 import { observer } from "mobx-react";
 import Model from "../canvas/Model";
+import TopButtons from "../../utils/TopButtons";
 
 type SidebarType = "Design" | "Modules"; // Define types for sidebar options
 
 const DesignPage = observer(() => {
   const manager = new Manager();
-  const [activeSidebar, setActiveSidebar] = useState<SidebarType>("Modules");
+  const [activeSidebar, setActiveSidebar] = useState<SidebarType>("Design");
   return (
     <div className="flex flex-col h-screen">
       <Navbar />
@@ -28,7 +29,10 @@ const DesignPage = observer(() => {
         <div className="flex-1 flex flex-col">
           {activeSidebar === "Design" ? <DesignLeftBar /> : <ModuleLeftbar />}
           <div className="flex items-center justify-center">
-            <div className="w-180 h-screen">
+            <div className="w-full h-screen ml-14 mt-10">
+              <div className="absolute top-22 right-90 z-10">
+                <TopButtons />
+              </div>
               <Canvas>
                 <Suspense fallback={null}>
                   <ambientLight intensity={1} />

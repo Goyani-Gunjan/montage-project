@@ -3,14 +3,17 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { TbPlus } from "react-icons/tb";
 import DropdownMenu from "../../utils/DropdownMenu";
 import { useState } from "react";
-import UIStore from "../../store/UIStore";
+import Manager from "../../store/Manager";
+import ModuleLeftBar from "../module/ModuleLeftbar";
 
 const DesignGrid = observer(() => {
+  const manager = new Manager();
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+  const [showModuleLeftBar, setShowModuleLeftBar] = useState(false);
 
   return (
     <div className="mt-2 space-y-4 overflow-y-auto flex-1 p-2">
-      {UIStore.selectedModules.map((module, index) => (
+      {manager.uiStore.selectedModules.map((module, index) => (
         <div
           key={index}
           className="relative w-full rounded flex flex-col items-start group bg-white hover:border hover:border-gray-500 border border-gray-300"
@@ -42,14 +45,18 @@ const DesignGrid = observer(() => {
         </div>
       ))}
 
-      <div className="w-full h-32 bg-gray-200 flex flex-col items-center justify-center rounded border border-gray-300 relative hover:bg-gray-300 group transition-colors duration-200">
-        <div className="p-1 rounded-full group-hover:bg-gray-400 transition-colors duration-200 cursor-pointer">
+      <div className="w-full h-40 bg-gray-200 flex flex-col items-center justify-center rounded border border-gray-300 relative hover:bg-gray-300 group transition-colors duration-200">
+        <div
+          className="p-1 rounded-full group-hover:bg-gray-400 transition-colors duration-200 cursor-pointer"
+          onClick={() => setShowModuleLeftBar(true)}
+        >
           <TbPlus size={32} />
         </div>
         <div className="mt-2 px-3 py-1 bg-gray-400 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           Add Module
         </div>
       </div>
+      {showModuleLeftBar && <ModuleLeftBar />}
     </div>
   );
 });

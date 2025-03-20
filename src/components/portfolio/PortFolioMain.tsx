@@ -1,19 +1,18 @@
 import {
-  FaPlus,
-  FaTh,
-  FaList,
   FaChevronDown,
   FaEllipsisH,
+  FaList,
+  FaPlus,
+  FaTh,
 } from "react-icons/fa";
-
-import PortFolioGrid from "./PortFolioGrid";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import Button from "../user/Button";
-import RenamePopup from "./RenamePopup";
-import LeavePopup from "./LeavePopup";
-import PortfolioList from "./PortfolioList";
 import { observer } from "mobx-react-lite";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import LeavePopup from "./LeavePopup";
+import PortFolioGrid from "./PortFolioGrid";
+import PortfolioList from "./PortfolioList";
+import RenamePopup from "./RenamePopup";
+import { Button, GrayButton } from "../user/Button";
 
 const PortFolioMain = observer(() => {
   const navigate = useNavigate();
@@ -35,17 +34,17 @@ const PortFolioMain = observer(() => {
           />
         </div>
         <div className="flex gap-4">
-          <Button
+          <GrayButton
             label="Grid"
             icon={<FaTh />}
             onClick={() => setView("grid")}
           />
-          <Button
+          <GrayButton
             label="List"
             icon={<FaList />}
             onClick={() => setView("list")}
           />
-          <Button
+          <GrayButton
             label="Date Created"
             icon={<FaChevronDown />}
             onClick={() => alert("Sort by Date...")}

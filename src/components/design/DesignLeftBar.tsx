@@ -7,7 +7,7 @@ const DesignLeftBar = () => {
   const [isListView, setIsListView] = useState(false);
 
   return (
-    <div className="fixed w-64 bg-gray-100 p-4 shadow-md h-[calc(100vh-4rem)] flex flex-col">
+    <div className="fixed top-[70px] w-80 left-[75px] bg-gray-100 p-4 shadow-md h-[calc(100vh-4rem)] flex flex-col z-10">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold">Design</h2>
         <div className="p-1 text-lg">

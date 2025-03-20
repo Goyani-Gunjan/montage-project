@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
 import { FaEllipsisH } from "react-icons/fa";
-import UIStore from "../../store/UIStore";
+import Manager from "../../store/Manager";
 
 type Design = {
   name: string;
@@ -11,8 +11,10 @@ type Design = {
 };
 
 const PortfolioList = observer(() => {
-  const portfolios = UIStore.portfolios;
-  const selectedPortfolioId = UIStore.selectedPortfolioId;
+  const manager = new Manager();
+
+  const portfolios = manager.uiStore.portfolios;
+  const selectedPortfolioId = manager.uiStore.selectedPortfolioId;
 
   const filteredDesigns: Design[] = portfolios
     .filter((portfolio) => portfolio.id === selectedPortfolioId)
@@ -24,7 +26,7 @@ const PortfolioList = observer(() => {
           month: "short",
           year: "numeric",
         }),
-        modules: 3, // Assuming a fixed value for modules
+        modules: 3,
         updated: new Date(portfolio.updatedAt).toLocaleDateString("en-GB", {
           day: "2-digit",
           month: "short",
