@@ -44,9 +44,9 @@ export const useModelData = (id, path, position) => {
           geometry: child.geometry,
           material: child.material,
           matrix: relativeMatrix,
-          position: child.position.clone(),
-          rotation: child.rotation.clone(),
-          scale: child.scale.clone(),
+          position: child.position,
+          rotation: child.rotation,
+          scale: child.scale,
           visible: child.visible,
           processed: false,
         };

@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { ModelData, MeshData } from "./types";
+import { ModelData, MeshData, Node } from "./types";
 import { processMeshesForModel } from "./utils";
 
 export const MontageStoreActions = (store: any) => ({
@@ -27,6 +27,7 @@ export const MontageStoreActions = (store: any) => ({
         meshes: [],
         nodes: [],
         rotation: new THREE.Euler(0, 0, 0),
+        isLocked: false,
       });
     }
   },
@@ -94,7 +95,7 @@ export const MontageStoreActions = (store: any) => ({
         (m: ModelData) => m.id === store.selectedModelId
       );
 
-      if (model) {
+      if (model && !model.isLocked) {
         const delta = new THREE.Vector3().subVectors(point, model.position);
 
         model.position.copy(point);
@@ -102,11 +103,11 @@ export const MontageStoreActions = (store: any) => ({
         model.nodes.forEach((node) => {
           node.center.add(delta);
 
-          if (node.originalCenter) {
-            node.originalCenter.x += delta.x;
-            node.originalCenter.y += delta.y;
-            node.originalCenter.z += delta.z;
-          }
+          // if (node.originalCenter) {
+          //   node.originalCenter.x += delta.x;
+          //   node.originalCenter.y += delta.y;
+          //   node.originalCenter.z += delta.z;
+          // }
         });
 
         const snappingThreshold = 4;
@@ -144,11 +145,11 @@ export const MontageStoreActions = (store: any) => ({
                 modelNodes.forEach((node) => {
                   node.center.add(offset);
 
-                  if (node.originalCenter) {
-                    node.originalCenter.x += offset.x;
-                    node.originalCenter.y += offset.y;
-                    node.originalCenter.z += offset.z;
-                  }
+                  // if (node.originalCenter) {
+                  //   node.originalCenter.x += offset.x;
+                  //   node.originalCenter.y += offset.y;
+                  //   node.originalCenter.z += offset.z;
+                  // }
                 });
 
                 snapped = true;
@@ -173,7 +174,7 @@ export const MontageStoreActions = (store: any) => ({
     }
   },
 
-  storeNodesForModel(id: string, nodes: any[]) {
+  storeNodesForModel(id: string, nodes: Node[]) {
     const model = store.models.find((model: ModelData) => model.id === id);
     if (model) {
       model.nodes = nodes;
@@ -270,6 +271,55 @@ export const MontageStoreActions = (store: any) => ({
     const model = store.models.find((model: ModelData) => model.id === modelId);
     if (model) {
       model.showControls = value;
+    }
+  },
+  duplicateModel(modelId: string) {
+    const model = store.models.find((model: ModelData) => model.id === modelId);
+    if (model) {
+      const newModelId = `${model.id}-${Date.now()}-copy`;
+      const offset = new THREE.Vector3(6, 0, -5);
+      const newPosition = model.position.clone().add(offset);
+
+      const newModel = {
+        ...model,
+        id: newModelId,
+        position: newPosition,
+        isLocked: false,
+        nodes: model.nodes.map((node: Node) => {
+          const nodeOffset = new THREE.Vector3().subVectors(
+            node.center,
+            model.position
+          );
+
+          const newCenter = newPosition.clone().add(nodeOffset);
+
+          return {
+            ...node,
+            center: newCenter,
+            originalCenter: node.originalCenter
+              ? {
+                  x: newPosition.x + nodeOffset.x,
+                  y: newPosition.y + nodeOffset.y,
+                  z: newPosition.z + nodeOffset.z,
+                }
+              : undefined,
+          };
+        }),
+        meshes: [...model.meshes],
+        showControls: false,
+        boundingBox: model.boundingBox ? model.boundingBox.clone() : undefined,
+      };
+
+      store.models.push(newModel);
+
+      store.selectModel(newModelId);
+    }
+  },
+
+  toggleLockModel(modelId: string) {
+    const model = store.models.find((model: ModelData) => model.id === modelId);
+    if (model) {
+      model.isLocked = !model.isLocked;
     }
   },
 });

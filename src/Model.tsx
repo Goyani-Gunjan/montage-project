@@ -11,6 +11,7 @@ import HtmlList from "./HtmlList";
 import { useModelInteraction } from "./useModelInteraction";
 import { useModelData } from "./useModelData";
 import { performRaycastFromMouse } from "./utils/utils";
+import { Html } from "@react-three/drei";
 
 const Model = observer(({ id, path, position }) => {
   const manager = new Manager();
@@ -121,6 +122,20 @@ const Model = observer(({ id, path, position }) => {
         />
         <HoverEffects boundingBox={boundingBox} isHovered={isHovered} />
         {model?.showControls && <HtmlList modelId={id} />}
+        {model?.isLocked && (
+          <Html>
+            <div
+              style={{
+                color: "red",
+                fontSize: "24px",
+                position: "absolute",
+                transform: "translate(-50%, -50%)",
+              }}
+            >
+              🔒
+            </div>
+          </Html>
+        )}
       </group>
 
       {model?.nodes.map((node, index) => (

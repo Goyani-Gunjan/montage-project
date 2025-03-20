@@ -23,16 +23,6 @@ class MontageStore {
     const model = this.models.find((model) => model.id === id);
     return model ? model.meshes : [];
   }
-  duplicateModel(modelId: string) {
-    const model = this.models.find((model) => model.id === modelId);
-    if (model) {
-      const newModel = { ...model, id: `${model.id}-${Date.now()}-copy` };
-      const offset = new THREE.Vector3(1, 0, 1);
-      newModel.position = model.position.clone().add(offset);
-
-      this.models.push(newModel);
-    }
-  }
 }
 
 export default MontageStore;
