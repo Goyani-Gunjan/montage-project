@@ -21,8 +21,9 @@ type SidebarType = "Design" | "Modules"; // Define types for sidebar options
 const DesignPage = observer(() => {
   const manager = new Manager();
   const [activeSidebar, setActiveSidebar] = useState<SidebarType>("Design");
+
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen overflow-y-auto">
       <Navbar />
       <div className="flex flex-1">
         <Sidebar setActiveSidebar={setActiveSidebar} />

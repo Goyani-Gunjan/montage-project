@@ -59,9 +59,9 @@ const RightBar = () => {
 
   return (
     <div>
-      <div className="w-85 h-screen pb-36 bg-white p-4 border-l border-gray-200 overflow-y-auto fixed right-0">
+      <div className="w-85 top-[70px] h-screen pb-36 bg-white p-4 border-l border-gray-200 overflow-y-auto fixed right-0">
         <div className="flex items-center justify-center mb-4 mt-3">
-          <h2 className="text-lg font-semibold text-center">
+          <h2 className="text-2xl font-semibold text-center">
             0 Bed 0.5 Bath 256 sqft
           </h2>
         </div>

@@ -100,7 +100,7 @@ const Navbar = observer(() => {
   return (
     <div className="fixed top-0 left-0 w-full flex justify-between items-center p-4 shadow-md bg-white z-10">
       <div className="flex items-center space-x-5">
-        <img src="assets/cineapp.png" alt="Logo" className="w-8 h-8" />
+        <div className="font-semibold text-lg">Montage</div>
         <button className="text-xl cursor-pointer" onClick={handleSave}>
           <FaSave />
         </button>

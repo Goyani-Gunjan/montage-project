@@ -38,23 +38,23 @@ const ModuleLeftBar = () => {
   }, []);
 
   return (
-    <div className="w-80 p-3 text-black bg-gray-100 fixed shadow-md top-[72px] left-[68px] z-10">
+    <div className="w-80 p-3 text-black bg-gray-100 fixed border-l border-gray-200 top-[72px] left-[80px] z-10">
       <h1 className="text-lg font-semibold mt-2">Modules</h1>
       <hr className=" border border-gray-200" />
 
-      <div className="flex justify-between items-center border border-gray-400 rounded my-3 p-2 ">
-        <IoSearchSharp size={20} />
+      <div className="flex justify-between items-center border-2 border-gray-300 rounded-md my-3 p-3 ">
+        <IoSearchSharp size={20} className="text-gray-400 font-semibold" />
         <input
           type="text"
           placeholder="Search Modules"
-          className="bg-transparent text-black flex-1 outline-none px-2 text-sm w-auto"
+          className="bg-transparent text-gray-600 flex-1 outline-none px-2 text-sm w-auto"
           value={searchValue}
           onChange={(e) => {
             console.log("Search Value in ModuleLeftbar:", e.target.value);
             setSearchValue(e.target.value);
           }}
         />
-        <BsSliders size={20} className="cursor-pointer" />
+        <BsSliders size={17} className="cursor-pointer" />
       </div>
       <hr className=" border border-gray-200" />
 
@@ -63,7 +63,7 @@ const ModuleLeftBar = () => {
           <button
             key={type}
             onClick={() => setActiveComponent(type)}
-            className={`text-sm border border-gray-400 px-2 py-1 rounded hover:bg-gray-300 cursor-pointer ${
+            className={`text-sm border border-gray-400 px-3 py-2 rounded hover:bg-gray-300 cursor-pointer ${
               activeComponent === type ? "bg-gray-300" : ""
             }`}
           >

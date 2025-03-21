@@ -46,7 +46,7 @@ const PortfolioList = observer(() => {
         </div>
       </div>
 
-      <div className="mt-5 ">
+      <div className="mt-5 h-[calc(100vh-16rem)] overflow-y-auto">
         <div className="space-y-2">
           {filteredDesigns.map((design, index) => (
             <div
