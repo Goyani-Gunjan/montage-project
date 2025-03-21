@@ -101,8 +101,11 @@ const Navbar = observer(() => {
     <div className="fixed top-0 left-0 w-full flex justify-between items-center p-4 shadow-md bg-white z-10">
       <div className="flex items-center space-x-5">
         <div className="font-semibold text-lg">Montage</div>
-        <button className="text-xl cursor-pointer" onClick={handleSave}>
-          <FaSave />
+        <button
+          className="text-xl cursor-pointer hover:bg-gray-300"
+          onClick={handleSave}
+        >
+          <FaSave className="p-1" size={30} />
         </button>
         <span className="font-semibold">{portfolioName}</span>
         <span>|</span>

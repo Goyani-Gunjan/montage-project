@@ -16,27 +16,40 @@ import CanvasWithDrop from "../canvas/CanvasWithDrop";
 import { observer } from "mobx-react";
 import Model from "../canvas/Model";
 import TopButtons from "../../utils/TopButtons";
+import ClosingButtons from "../../utils/ClosingButtons";
 
 type SidebarType = "Design" | "Modules";
 
 const DesignPage = observer(() => {
   const manager = new Manager();
   const [activeSidebar, setActiveSidebar] = useState<SidebarType>("Design");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State to track sidebar visibility
+
   const handlePointerMissed = () => {
     manager.montageStore.toggleShowControls(
       manager.montageStore.selectedModelId,
       false
     );
   };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev); // Toggle sidebar visibility
+  };
+
   return (
     <div className="flex flex-col h-screen overflow-y-auto">
       <Navbar />
       <div className="flex flex-1">
         <Sidebar setActiveSidebar={setActiveSidebar} />
         <div className="flex-1 flex flex-col">
-          {activeSidebar === "Design" ? <DesignLeftBar /> : <ModuleLeftbar />}
+          {isSidebarOpen &&
+            (activeSidebar === "Design" ? (
+              <DesignLeftBar />
+            ) : (
+              <ModuleLeftbar />
+            ))}
           <div className="flex items-center justify-center">
-            <div className="w-full h-screen ml-14 mt-10">
+            <div className="w-full h-screen ml-14 mt-10 relative">
               <div className="absolute top-22 right-90 z-10">
                 <TopButtons />
               </div>
@@ -65,16 +78,13 @@ const DesignPage = observer(() => {
                     rotation={[-Math.PI / 2, 0, 0]}
                     zoom={100}
                   />
-                  {/* <CameraControls
-                    makeDefault
-                    minZoom={20}
-                    maxZoom={300}
-                    azimuthRotateSpeed={manager.montageStore.is3D ? 1 : 0}
-                    polarRotateSpeed={manager.montageStore.is3D ? 1 : 0}
-                  /> */}
                   <OrbitControls enableRotate={manager.montageStore.is3D} />
                 </Suspense>
               </Canvas>
+              <ClosingButtons
+                isSidebarOpen={isSidebarOpen}
+                toggleSidebar={toggleSidebar}
+              />
             </div>
           </div>
         </div>

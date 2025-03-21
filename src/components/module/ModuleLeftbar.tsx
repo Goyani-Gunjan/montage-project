@@ -38,7 +38,7 @@ const ModuleLeftBar = () => {
   }, []);
 
   return (
-    <div className="w-80 p-3 text-black bg-gray-100 fixed border-l border-gray-200 top-[72px] left-[80px] z-10">
+    <div className="p-3 text-black bg-gray-100 fixed border-l border-gray-200 top-[72px] left-[80px] z-10">
       <h1 className="text-lg font-semibold mt-2">Modules</h1>
       <hr className=" border border-gray-200" />
 
