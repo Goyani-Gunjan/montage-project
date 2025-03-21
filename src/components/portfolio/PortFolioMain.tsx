@@ -12,7 +12,7 @@ import LeavePopup from "./LeavePopup";
 import PortFolioGrid from "./PortFolioGrid";
 import PortfolioList from "./PortfolioList";
 import RenamePopup from "./RenamePopup";
-import { Button, GrayButton } from "../user/Button";
+import { Button, GrayButton } from "../../utils/Button";
 
 const PortFolioMain = observer(() => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const PortFolioMain = observer(() => {
 
   return (
     <main className="flex-1 p-6 relative">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4 ">
         <div className="flex gap-4">
           <Button
             label="New Design"

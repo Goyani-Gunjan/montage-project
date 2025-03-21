@@ -52,7 +52,7 @@ const RightBar = () => {
       [subStyleId]: material,
     }));
     manager.uiStore.setSelectedMaterial(subStyleId, material);
-    loadTexture(material.imageURL);
+    // loadTexture(material.imageURL);
 
     console.log("Configured Style:", manager.uiStore.configuredStyle);
   };
@@ -62,7 +62,8 @@ const RightBar = () => {
       <div className="w-85 top-[72px] h-screen pb-36 bg-white p-4 border-l border-gray-200 overflow-y-auto fixed right-0">
         <div className="flex items-center justify-center mb-4 mt-3">
           <h2 className="text-2xl font-semibold text-center">
-            0 Bed 0.5 Bath 256 sqft
+            {manager.uiStore.totalBedrooms} Bed {manager.uiStore.totalBathrooms}{" "}
+            Bath {manager.uiStore.totalSize} sqft
           </h2>
         </div>
 

@@ -95,18 +95,12 @@ class UIStore {
 
   setSelectedMaterial(subStyleId: number, material: Material) {
     this.selectedMaterials[subStyleId] = material;
-    // if (subStyleId == 1) {
-    //   this.manager?.montageStore.updateTextureForModel(
-    //     material,
-    //     "External_Wall"
-    //   );
-    // }
-    // if (subStyleId == 2) {
-    //   this.manager?.montageStore.updateTextureForModel(
-    //     material,
-    //     "Internal_Wall"
-    //   );
-    // }
+    if (subStyleId == 1) {
+      this.manager?.montageStore.updateTextureForModel(material.imageURL);
+    }
+    if (subStyleId == 2) {
+      this.manager?.montageStore.updateTextureForModel(material.imageURL);
+    }
     console.log(`Material changed for subStyle ${subStyleId}:`, toJS(material));
   }
 
@@ -120,6 +114,27 @@ class UIStore {
         subStyleId: parseInt(subStyleId, 10),
         selectedMaterialId: material.id,
       })
+    );
+  }
+
+  get totalBedrooms() {
+    return this.selectedModules.reduce(
+      (total, module) => total + module.noOfBedrooms,
+      0
+    );
+  }
+
+  get totalSize() {
+    return this.selectedModules.reduce(
+      (total, module) => total + module.size,
+      0
+    );
+  }
+
+  get totalBathrooms() {
+    return this.selectedModules.reduce(
+      (total, module) => total + module.noOfBathrooms,
+      0
     );
   }
 

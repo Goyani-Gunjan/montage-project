@@ -1,5 +1,5 @@
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { RightSidebarButton, SidebarButton } from "../components/user/Button";
+import { RightSidebarButton, SidebarButton } from "./Button";
 
 interface ClosingButtonsProps {
   isSidebarOpen: boolean;

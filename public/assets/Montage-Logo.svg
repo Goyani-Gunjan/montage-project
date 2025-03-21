@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="37.5" height="37.5" viewBox="0 0 37.5 37.5">
+  <g id="Logo" transform="translate(0.25 0.044)">
+    <path id="Crossline" d="M.516,48.559,6.51,54.671l6-6.085,6,6.085,6-6.085,6,6.085,6-6.086" transform="translate(-0.012 -35.898)" fill="none" stroke="#303030" stroke-width="0.75"/>
+    <line id="Line_1" data-name="Line 1" y1="17.933" transform="translate(6.502 18.773)" fill="none" stroke="#303030" stroke-width="0.75"/>
+    <line id="Line_2" data-name="Line 2" y1="17.934" transform="translate(30.492 18.772)" fill="none" stroke="#303030" stroke-width="0.75"/>
+    <path id="Outline" d="M27.5,33.7l1.507,1.5,1.483,1.5S32,35.2,33.5,33.689l3-3.017V12.66l-6-5.977L24.5.706l-3,2.988-3,2.988-3-2.988L12.5.706l-6,5.977L.5,12.66V30.646l3,3.017,3,3.016L8,35.17,9.5,33.66V21.753L14,26.214l4.5,4.46s2.253-2.229,4.5-4.459l4.5-4.459V33.7Z" transform="translate(0 0)" fill="none" stroke="#303030" stroke-linejoin="round" stroke-width="1.5"/>
+  </g>
+</svg>

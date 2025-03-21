@@ -6,59 +6,68 @@ import { useState } from "react";
 import Manager from "../../store/Manager";
 import ModuleLeftBar from "../module/ModuleLeftbar";
 
-const DesignGrid = observer(() => {
-  const manager = new Manager();
-  const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
-  const [showModuleLeftBar, setShowModuleLeftBar] = useState(false);
+type DesignGridProps = {
+  handleSidebarChange: (name: string) => void;
+};
 
-  return (
-    <div className="mt-2 space-y-4 overflow-y-auto flex-1 p-2">
-      {manager.uiStore.selectedModules.map((module, index) => (
-        <div
-          key={index}
-          className="relative w-full rounded flex flex-col items-start group bg-white hover:border hover:border-gray-500 border border-gray-300"
-        >
-          <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <button
-              onClick={() =>
-                setActiveDropdown(
-                  activeDropdown === module.id ? null : module.id
-                )
-              }
-              className="p-1 rounded cursor-pointer hover:bg-gray-200"
-            >
-              <BsThreeDotsVertical size={20} />
-              <DropdownMenu isOpen={activeDropdown === module.id} />
-            </button>
-          </div>
-          <div className="w-full flex flex-col gap-2 p-2">
-            <img
-              src={module.moduleImage}
-              alt={module.name}
-              className="w-full px-8 py-2 h-32 object-fit"
-            />
-            <div className="flex justify-between w-full text-gray-700 space-x-2">
-              <h3 className="text-sm font-semibold">{module.name}</h3>{" "}
-              <span className="text-sm">{index + 1}</span>
+const DesignGrid: React.FC<DesignGridProps> = observer(
+  ({ handleSidebarChange }) => {
+    const manager = new Manager();
+    const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+    const [showModuleLeftBar, setShowModuleLeftBar] = useState(false);
+
+    return (
+      <div className="mt-2 space-y-4 overflow-y-auto flex-1 p-2">
+        {manager.uiStore.selectedModules.map((module, index) => (
+          <div
+            key={index}
+            className="relative w-full rounded flex flex-col items-start group bg-white hover:border hover:border-gray-500 border border-gray-300"
+          >
+            <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <button
+                onClick={() =>
+                  setActiveDropdown(
+                    activeDropdown === module.id ? null : module.id
+                  )
+                }
+                className="p-1 rounded cursor-pointer hover:bg-gray-200"
+              >
+                <BsThreeDotsVertical size={20} />
+                <DropdownMenu isOpen={activeDropdown === module.id} />
+              </button>
+            </div>
+            <div className="w-full flex flex-col gap-2 p-2">
+              <img
+                src={module.moduleImage}
+                alt={module.name}
+                className="w-full px-8 py-2 h-32 object-fit"
+              />
+              <div className="flex justify-between w-full text-gray-700 space-x-2">
+                <h3 className="text-sm font-semibold">{module.name}</h3>{" "}
+                <span className="text-sm">{index + 1}</span>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
 
-      <div className="w-full h-40 bg-gray-200 flex flex-col items-center justify-center rounded border border-gray-300 relative hover:bg-gray-300 group transition-colors duration-200">
-        <div
-          className="p-1 rounded-full group-hover:bg-gray-400 transition-colors duration-200 cursor-pointer"
-          onClick={() => setShowModuleLeftBar(true)}
-        >
-          <TbPlus size={32} />
+        <div className="w-full h-40 bg-gray-200 flex flex-col items-center justify-center rounded border border-gray-300 relative hover:bg-gray-300 group transition-colors duration-200">
+          <div
+            className="p-1 rounded-full group-hover:bg-gray-400 transition-colors duration-200 cursor-pointer"
+            onClick={() => {
+              setShowModuleLeftBar(true);
+              handleSidebarChange("Modules");
+            }}
+          >
+            <TbPlus size={32} />
+          </div>
+          <div className="mt-2 px-3 py-1 bg-gray-400 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            Add Module
+          </div>
         </div>
-        <div className="mt-2 px-3 py-1 bg-gray-400 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          Add Module
-        </div>
+        {showModuleLeftBar && <ModuleLeftBar />}
       </div>
-      {showModuleLeftBar && <ModuleLeftBar />}
-    </div>
-  );
-});
+    );
+  }
+);
 
 export default DesignGrid;
