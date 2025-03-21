@@ -35,15 +35,36 @@ class MontageStore {
         model.position.z
       );
 
+      const rotationMatrix = new THREE.Matrix4();
+      const eulerRotation = Array.isArray(model.rotation)
+        ? new THREE.Euler(
+            model.rotation[0],
+            model.rotation[1],
+            model.rotation[2]
+          )
+        : model.rotation;
+      rotationMatrix.makeRotationFromEuler(eulerRotation);
+
       model.nodes.forEach((node) => {
         const offset = new THREE.Vector3().subVectors(node.center, modelCenter);
 
+        offset.applyMatrix4(rotationMatrix);
+
         offset.x *= -1;
 
+        offset.applyMatrix4(rotationMatrix.clone().invert());
+
         node.center.copy(modelCenter).add(offset);
+
+        if (node.dominantAxis === "x") {
+          node.dominantAxis = "z";
+        } else if (node.dominantAxis === "z") {
+          node.dominantAxis = "x";
+        }
       });
     }
   }
+
   flipModelVertically(id: string) {
     const model = this.models.find((model) => model.id === id);
     if (model) {
@@ -55,12 +76,32 @@ class MontageStore {
         model.position.z
       );
 
+      const rotationMatrix = new THREE.Matrix4();
+      const eulerRotation = Array.isArray(model.rotation)
+        ? new THREE.Euler(
+            model.rotation[0],
+            model.rotation[1],
+            model.rotation[2]
+          )
+        : model.rotation;
+      rotationMatrix.makeRotationFromEuler(eulerRotation);
+
       model.nodes.forEach((node) => {
         const offset = new THREE.Vector3().subVectors(node.center, modelCenter);
 
+        offset.applyMatrix4(rotationMatrix);
+
         offset.z *= -1;
 
+        offset.applyMatrix4(rotationMatrix.clone().invert());
+
         node.center.copy(modelCenter).add(offset);
+
+        if (node.dominantAxis === "x") {
+          node.dominantAxis = "z";
+        } else if (node.dominantAxis === "z") {
+          node.dominantAxis = "x";
+        }
       });
     }
   }

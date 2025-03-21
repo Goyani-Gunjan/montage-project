@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FaEllipsisH } from "react-icons/fa";
 import { observer } from "mobx-react-lite";
 import Manager from "../../store/Manager";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface Design {
   id: string;

@@ -103,12 +103,11 @@ export const fetchPost = async <T = unknown>(
 
   try {
     const request = await fetch(`${BASE_URL}${pathName}`, options);
-    console.log(request);
     if (!request.ok) {
       const errorResponse = await request.json();
       return {
         success: false,
-        message: errorResponse?.message || "Error occurred",
+        message: errorResponse?.error || "Error occurred",
       };
     }
 

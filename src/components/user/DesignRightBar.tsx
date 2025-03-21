@@ -54,7 +54,7 @@ const RightBar = () => {
     manager.uiStore.setSelectedMaterial(subStyleId, material);
     // loadTexture(material.imageURL);
 
-    console.log("Configured Style:", manager.uiStore.configuredStyle);
+    // console.log("Configured Style:", manager.uiStore.configuredStyle);
   };
 
   return (

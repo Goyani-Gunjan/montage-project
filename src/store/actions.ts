@@ -87,6 +87,15 @@ export const MontageStoreActions = (store: any) => ({
           modelCenter.y + nodeLocalRotated.y,
           modelCenter.z + nodeLocalRotated.z
         );
+
+        const nodeSize = new THREE.Vector3();
+        const nodeBox = new THREE.Box3().setFromCenterAndSize(
+          node.center,
+          new THREE.Vector3(1, 1, 1)
+        );
+        nodeBox.getSize(nodeSize);
+
+        node.dominantAxis = nodeSize.x > nodeSize.z ? "x" : "z";
       });
     }
   },
@@ -247,7 +256,7 @@ export const MontageStoreActions = (store: any) => ({
 
     store.models.splice(modelIndex, 1);
 
-    console.log(`Model ${id} deleted successfully`);
+    // console.log(`Model ${id} deleted successfully`);
   },
 
   toggleShowControls(modelId: string, value: boolean) {

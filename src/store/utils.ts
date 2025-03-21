@@ -10,9 +10,8 @@ export const processMeshesForModel = (
   model.meshes.forEach((mesh) => {
     if (mesh) {
       if (mesh.name.includes("External_Wall") && textureURL) {
-        console.log(textureURL);
         mesh.material = mesh.material.clone();
-        const texture = textureLoader.load("wood.jpg");
+        const texture = textureLoader.load("wood1.png");
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         texture.colorSpace = THREE.LinearSRGBColorSpace;
@@ -28,19 +27,7 @@ export const processMeshesForModel = (
           }
           mesh.material.color.set("cyan");
           mesh.visible = true;
-        }
-        // if (mesh.name.includes("External_Wall") && textureURL) {
-        //   console.log(textureURL);
-        //   mesh.material = mesh.material.clone();
-        //   const texture = textureLoader.load("wood.jpg");
-        //   texture.wrapS = THREE.RepeatWrapping;
-        //   texture.wrapT = THREE.RepeatWrapping;
-        //   texture.colorSpace = THREE.LinearSRGBColorSpace;
-        //   mesh.material.map = texture;
-        //   mesh.material.needsUpdate = true;
-        //   mesh.visible = true;
-        // }
-        else {
+        } else {
           mesh.visible = true;
         }
       } else {

@@ -73,7 +73,7 @@ class UIStore {
   }
   setPortfolios(data: Portfolio[]) {
     this.portfolios = data || [];
-    console.log(toJS(this.portfolios));
+    // console.log(toJS(this.portfolios));
   }
   setTexture(url: string, texture: THREE.Texture) {
     this.textures[url] = texture;
@@ -81,7 +81,7 @@ class UIStore {
 
   addSelectedModule(module: Module) {
     this.selectedModules.push(module);
-    console.log(toJS(this.selectedModules));
+    // console.log(toJS(this.selectedModules));
   }
 
   setSelectedPortfolioId(id: string) {
