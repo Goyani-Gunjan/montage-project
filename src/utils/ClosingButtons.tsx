@@ -1,12 +1,17 @@
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { SidebarButton } from "../components/user/Button";
+import { RightSidebarButton, SidebarButton } from "../components/user/Button";
 
 interface ClosingButtonsProps {
   isSidebarOpen: boolean;
   toggleSidebar: () => void;
 }
 
-const ClosingButtons = ({
+interface RightBarToggleButtonProps {
+  isRightBarOpen: boolean;
+  toggleRightBar: () => void;
+}
+
+export const ClosingButtons = ({
   isSidebarOpen,
   toggleSidebar,
 }: ClosingButtonsProps) => {
@@ -27,4 +32,21 @@ const ClosingButtons = ({
   );
 };
 
-export default ClosingButtons;
+export const RightBarToggleButton = ({
+  isRightBarOpen,
+  toggleRightBar,
+}: RightBarToggleButtonProps) => {
+  return (
+    <div
+      className={`absolute bottom-20 ${
+        isRightBarOpen ? "right-90" : "right-8"
+      } z-10`}
+    >
+      <RightSidebarButton
+        label={isRightBarOpen ? "Close Sidebar" : "Open Sidebar"}
+        icon={isRightBarOpen ? <FaArrowRight /> : <FaArrowLeft />}
+        onClick={toggleRightBar}
+      />
+    </div>
+  );
+};

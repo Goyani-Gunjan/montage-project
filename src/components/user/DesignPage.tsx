@@ -16,14 +16,18 @@ import CanvasWithDrop from "../canvas/CanvasWithDrop";
 import { observer } from "mobx-react";
 import Model from "../canvas/Model";
 import TopButtons from "../../utils/TopButtons";
-import ClosingButtons from "../../utils/ClosingButtons";
+import {
+  ClosingButtons,
+  RightBarToggleButton,
+} from "../../utils/ClosingButtons";
 
 type SidebarType = "Design" | "Modules";
 
 const DesignPage = observer(() => {
   const manager = new Manager();
   const [activeSidebar, setActiveSidebar] = useState<SidebarType>("Design");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State to track sidebar visibility
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isRightBarOpen, setIsRightBarOpen] = useState(true);
 
   const handlePointerMissed = () => {
     manager.montageStore.toggleShowControls(
@@ -33,7 +37,11 @@ const DesignPage = observer(() => {
   };
 
   const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev); // Toggle sidebar visibility
+    setIsSidebarOpen((prev) => !prev);
+  };
+
+  const toggleRightBar = () => {
+    setIsRightBarOpen((prev) => !prev);
   };
 
   return (
@@ -85,10 +93,14 @@ const DesignPage = observer(() => {
                 isSidebarOpen={isSidebarOpen}
                 toggleSidebar={toggleSidebar}
               />
+              <RightBarToggleButton
+                isRightBarOpen={isRightBarOpen}
+                toggleRightBar={toggleRightBar}
+              />
             </div>
           </div>
         </div>
-        <RightBar />
+        {isRightBarOpen && <RightBar />}
       </div>
     </div>
   );
