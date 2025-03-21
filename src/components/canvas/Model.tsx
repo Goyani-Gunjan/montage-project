@@ -1,7 +1,9 @@
 // Model.js
+import { Html } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { observer } from "mobx-react";
 import { useMemo, useRef, useState } from "react";
+import { FaLock } from "react-icons/fa";
 import * as THREE from "three";
 import { useModelData } from "../../hooks/useModelData";
 import { useModelInteraction } from "../../hooks/useModelInteraction";
@@ -97,6 +99,7 @@ const Model = observer(({ id, path, position }) => {
           model?.position.y || 0,
           model?.position.z || 0,
         ]}
+        scale={model?.scale}
         ref={groupRef}
         onClick={handleClick}
         onPointerOver={handlePointerOver}
@@ -107,28 +110,47 @@ const Model = observer(({ id, path, position }) => {
         onPointerMove={handlePointerMove}
       >
         <ModelRenderer meshes={meshes} manager={manager} />
-        <BoundingBox
-          boundingBox={boundingBox}
-          isSelected={manager.montageStore.selectedModelId === id}
-          cornerSpheres={
-            manager.montageStore.selectedModelId === id
-              ? manager.montageStore.selectedModelCorners
-              : []
-          }
-          onDown={onDown}
-          onMove={onMove}
-          onUp={onUp}
-        />
-        <HoverEffects boundingBox={boundingBox} isHovered={isHovered} />
+        {!manager.montageStore.is3D && (
+          <>
+            <BoundingBox
+              boundingBox={boundingBox}
+              isSelected={manager.montageStore.selectedModelId === id}
+              cornerSpheres={
+                manager.montageStore.selectedModelId === id
+                  ? manager.montageStore.selectedModelCorners
+                  : []
+              }
+              onDown={onDown}
+              onMove={onMove}
+              onUp={onUp}
+            />
+            <HoverEffects boundingBox={boundingBox} isHovered={isHovered} />
+          </>
+        )}
         {model?.showControls && <HtmlList modelId={id} />}
+        {model?.isLocked && (
+          <Html>
+            <div
+              style={{
+                color: "black",
+                fontSize: "24px",
+                position: "absolute",
+                transform: "translate(-50%, -50%)",
+              }}
+            >
+              <FaLock />
+            </div>
+          </Html>
+        )}
       </group>
 
-      {model?.nodes.map((node, index) => (
-        <mesh position={[node.center.x, 4, node.center.z]} key={index}>
-          <sphereGeometry args={[0.1, 32, 32]} />
-          <meshBasicMaterial color="red" />
-        </mesh>
-      ))}
+      {!manager.montageStore.is3D &&
+        model?.nodes.map((node, index) => (
+          <mesh position={[node.center.x, 4, node.center.z]} key={index}>
+            <sphereGeometry args={[0.1, 32, 32]} />
+            <meshBasicMaterial color="red" />
+          </mesh>
+        ))}
     </>
   );
 });

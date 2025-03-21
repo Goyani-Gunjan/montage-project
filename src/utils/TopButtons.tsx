@@ -2,18 +2,20 @@
 import React from "react";
 import { FaAlignLeft, FaLayerGroup, FaCube, FaImage } from "react-icons/fa";
 import { CanvasButton } from "../components/user/Button";
+import Manager from "../store/Manager";
 
 const TopButtons: React.FC = () => {
+  const manager = new Manager();
   const buttons = [
     {
       icon: <FaImage />,
       label: "2D View",
-      onClick: () => console.log("2D Button 1 clicked"),
+      onClick: () => manager.montageStore.toggle3D(false),
     },
     {
       icon: <FaCube />,
       label: "3D View",
-      onClick: () => console.log("3D Button 2 clicked"),
+      onClick: () => manager.montageStore.toggle3D(true),
     },
     {
       icon: <FaLayerGroup />,

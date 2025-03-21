@@ -36,6 +36,7 @@ const CanvasWithDrop: React.FC = () => {
             const file = JSON.parse(fileData);
             const modelId = Date.now().toString();
             manager.montageStore.loadModel(modelId, file.glbFile, point);
+            manager.uiStore.addSelectedModule(file);
           } catch (err) {
             console.error("Error parsing dropped data:", err);
           }
