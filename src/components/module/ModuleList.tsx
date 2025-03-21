@@ -14,11 +14,6 @@ const ModuleList = observer(({ searchValue, moduleType }: ModuleListProps) => {
       module.name.includes(moduleType) &&
       module.name.toLowerCase().includes(searchValue.toLowerCase())
   );
-
-  const handleModuleClick = (module: any) => {
-    manager.uiStore.addSelectedModule(module);
-  };
-
   const handleDragStart = (
     event: React.DragEvent<HTMLDivElement>,
     module: any

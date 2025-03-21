@@ -30,4 +30,6 @@ export interface ModelData {
   rotation: THREE.Euler;
   showControls?: boolean;
   nodes: Node[];
+  isLocked: boolean;
+  scale: [number, number, number];
 }

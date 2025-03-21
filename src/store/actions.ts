@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { MeshData, ModelData } from "./types";
+import { MeshData, ModelData, Node } from "./types";
 import { processMeshesForModel } from "./utils";
 
 export const MontageStoreActions = (store: any) => ({
@@ -7,8 +7,8 @@ export const MontageStoreActions = (store: any) => ({
     store.planeRef = ref;
   },
 
-  toggle3D() {
-    store.is3D = !store.is3D;
+  toggle3D(is3D: boolean) {
+    store.is3D = is3D;
     store.selectedModelId = null;
     store.selectedModelCorners = [];
     store.processMeshesForAllModels();
@@ -27,6 +27,8 @@ export const MontageStoreActions = (store: any) => ({
         meshes: [],
         nodes: [],
         rotation: new THREE.Euler(0, 0, 0),
+        isLocked: false,
+        scale: [1, 1, 1],
       });
     }
   },
@@ -89,24 +91,18 @@ export const MontageStoreActions = (store: any) => ({
     }
   },
   handleDrag(point: THREE.Vector3) {
-    if (store.isDragging && store.selectedModelId && point) {
+    if (store.isDragging && store.selectedModelId && point && store.is3D) {
       const model = store.models.find(
         (m: ModelData) => m.id === store.selectedModelId
       );
 
-      if (model) {
+      if (model && !model.isLocked) {
         const delta = new THREE.Vector3().subVectors(point, model.position);
 
         model.position.copy(point);
 
         model.nodes.forEach((node) => {
           node.center.add(delta);
-
-          if (node.originalCenter) {
-            node.originalCenter.x += delta.x;
-            node.originalCenter.y += delta.y;
-            node.originalCenter.z += delta.z;
-          }
         });
 
         const snappingThreshold = 4;
@@ -117,42 +113,30 @@ export const MontageStoreActions = (store: any) => ({
           const otherModel = store.models[i];
           if (otherModel.id === model.id) continue;
           const otherModelNodes = otherModel.nodes;
-          // const otherBoundingBox = otherModel.boundingBox;
 
-          // Check if the models are within snapping distance first
           for (let j = 0; j < otherModelNodes.length && !snapped; j++) {
             const otherNode = otherModelNodes[j];
             for (let k = 0; k < modelNodes.length && !snapped; k++) {
               const node = modelNodes[k];
-              const distance = node.center.distanceTo(otherNode.center);
 
-              if (distance <= snappingThreshold) {
-                // // Now check if their bounding boxes overlap
-                // if (model.boundingBox.intersectsBox(otherBoundingBox)) {
-                //   console.log("Bounding boxes overlap, stopping snapping");
-                //   // snapped = true;
-                //   break;
-                // }
+              if (node.dominantAxis === otherNode.dominantAxis) {
+                const distance = node.center.distanceTo(otherNode.center);
 
-                const offset = new THREE.Vector3().subVectors(
-                  otherNode.center,
-                  node.center
-                );
+                if (distance <= snappingThreshold) {
+                  const offset = new THREE.Vector3().subVectors(
+                    otherNode.center,
+                    node.center
+                  );
 
-                model.position.add(offset);
+                  model.position.add(offset);
 
-                modelNodes.forEach((node) => {
-                  node.center.add(offset);
+                  modelNodes.forEach((node) => {
+                    node.center.add(offset);
+                  });
 
-                  if (node.originalCenter) {
-                    node.originalCenter.x += offset.x;
-                    node.originalCenter.y += offset.y;
-                    node.originalCenter.z += offset.z;
-                  }
-                });
-
-                snapped = true;
-                break;
+                  snapped = true;
+                  break;
+                }
               }
             }
           }
@@ -173,7 +157,7 @@ export const MontageStoreActions = (store: any) => ({
     }
   },
 
-  storeNodesForModel(id: string, nodes: any[]) {
+  storeNodesForModel(id: string, nodes: Node[]) {
     const model = store.models.find((model: ModelData) => model.id === id);
     if (model) {
       model.nodes = nodes;
@@ -270,6 +254,94 @@ export const MontageStoreActions = (store: any) => ({
     const model = store.models.find((model: ModelData) => model.id === modelId);
     if (model) {
       model.showControls = value;
+    }
+  },
+
+  duplicateModel(modelId: string) {
+    const model = store.models.find((model: ModelData) => model.id === modelId);
+    if (model) {
+      const newModelId = `${model.id}-${Date.now()}-copy`;
+      const offset = new THREE.Vector3(6, 0, -5);
+      const newPosition = model.position.clone().add(offset);
+
+      const newModel = {
+        ...model,
+        id: newModelId,
+        position: newPosition,
+        isLocked: false,
+        nodes: model.nodes.map((node: Node) => {
+          const nodeOffset = new THREE.Vector3().subVectors(
+            node.center,
+            model.position
+          );
+
+          const newCenter = newPosition.clone().add(nodeOffset);
+
+          return {
+            ...node,
+            center: newCenter,
+            originalCenter: node.originalCenter
+              ? {
+                  x: newPosition.x + nodeOffset.x,
+                  y: newPosition.y + nodeOffset.y,
+                  z: newPosition.z + nodeOffset.z,
+                }
+              : undefined,
+          };
+        }),
+        meshes: [...model.meshes],
+        showControls: false,
+        boundingBox: model.boundingBox ? model.boundingBox.clone() : undefined,
+      };
+
+      store.models.push(newModel);
+
+      store.selectModel(newModelId);
+    }
+  },
+
+  toggleLockModel(modelId: string) {
+    const model = store.models.find((model: ModelData) => model.id === modelId);
+    if (model) {
+      model.isLocked = !model.isLocked;
+    }
+  },
+
+  updateTextureForModel(texture: THREE.Texture, nameOfAppliedTexture: string) {
+    const model = store.models.find(
+      (model: ModelData) => model.id === store.selectedModelId
+    );
+
+    if (model) {
+      texture.needsUpdate = true;
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+
+      let textureApplied = false;
+
+      model.meshes.forEach((mesh: MeshData) => {
+        if (mesh.name.includes(nameOfAppliedTexture)) {
+          if (!mesh.originalMaterial) {
+            mesh.originalMaterial = mesh.material.clone();
+          }
+
+          const newMaterial = mesh.originalMaterial.clone();
+          newMaterial.map = texture;
+          newMaterial.needsUpdate = true;
+
+          mesh.material = newMaterial;
+          mesh.textureApplied = true;
+          textureApplied = true;
+
+          console.log(`Applied texture to ${mesh.name}`);
+        }
+      });
+
+      if (!textureApplied) {
+        console.warn(`No meshes found matching "${nameOfAppliedTexture}"`);
+      }
+    } else {
+      console.warn("No model selected for texture update");
     }
   },
 });

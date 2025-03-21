@@ -95,6 +95,18 @@ class UIStore {
 
   setSelectedMaterial(subStyleId: number, material: Material) {
     this.selectedMaterials[subStyleId] = material;
+    // if (subStyleId == 1) {
+    //   this.manager?.montageStore.updateTextureForModel(
+    //     material,
+    //     "External_Wall"
+    //   );
+    // }
+    // if (subStyleId == 2) {
+    //   this.manager?.montageStore.updateTextureForModel(
+    //     material,
+    //     "Internal_Wall"
+    //   );
+    // }
     console.log(`Material changed for subStyle ${subStyleId}:`, toJS(material));
   }
 
