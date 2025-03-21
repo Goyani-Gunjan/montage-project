@@ -30,7 +30,7 @@ const CanvasWithDrop: React.FC = () => {
 
         if (intersects.length > 0) {
           const point = intersects[0].point;
-
+          console.log(point);
           try {
             const fileData = event.dataTransfer.getData("application/json");
             const file = JSON.parse(fileData);

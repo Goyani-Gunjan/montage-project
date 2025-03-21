@@ -35,6 +35,11 @@ export const useModelData = (id, path, position) => {
       .invert();
 
     clonedScene.traverse((child) => {
+      if (
+        child.name.includes("Roof") ||
+        (child.parent?.name && child.parent.name.includes("Ceiling"))
+      )
+        return;
       if (child.isMesh && child.geometry) {
         child.updateMatrixWorld(true);
         const relativeMatrix = new THREE.Matrix4().multiplyMatrices(

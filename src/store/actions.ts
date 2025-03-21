@@ -26,7 +26,7 @@ export const MontageStoreActions = (store: any) => ({
         position,
         meshes: [],
         nodes: [],
-        rotation: new THREE.Euler(0, 0, 0),
+        rotation: [0, 0, 0],
         isLocked: false,
         scale: [1, 1, 1],
       });
@@ -91,7 +91,7 @@ export const MontageStoreActions = (store: any) => ({
     }
   },
   handleDrag(point: THREE.Vector3) {
-    if (store.isDragging && store.selectedModelId && point && store.is3D) {
+    if (store.isDragging && store.selectedModelId && point && !store.is3D) {
       const model = store.models.find(
         (m: ModelData) => m.id === store.selectedModelId
       );
@@ -105,7 +105,7 @@ export const MontageStoreActions = (store: any) => ({
           node.center.add(delta);
         });
 
-        const snappingThreshold = 4;
+        const snappingThreshold = 2;
         let snapped = false;
         const modelNodes = model.nodes;
 
@@ -307,39 +307,12 @@ export const MontageStoreActions = (store: any) => ({
     }
   },
 
-  updateTextureForModel(texture: THREE.Texture, nameOfAppliedTexture: string) {
+  updateTextureForModel(texture: string) {
     const model = store.models.find(
       (model: ModelData) => model.id === store.selectedModelId
     );
-
     if (model) {
-      texture.needsUpdate = true;
-      texture.wrapS = THREE.RepeatWrapping;
-      texture.wrapT = THREE.RepeatWrapping;
-
-      let textureApplied = false;
-
-      model.meshes.forEach((mesh: MeshData) => {
-        if (mesh.name.includes(nameOfAppliedTexture)) {
-          if (!mesh.originalMaterial) {
-            mesh.originalMaterial = mesh.material.clone();
-          }
-
-          const newMaterial = mesh.originalMaterial.clone();
-          newMaterial.map = texture;
-          newMaterial.needsUpdate = true;
-
-          mesh.material = newMaterial;
-          mesh.textureApplied = true;
-          textureApplied = true;
-
-          console.log(`Applied texture to ${mesh.name}`);
-        }
-      });
-
-      if (!textureApplied) {
-        console.warn(`No meshes found matching "${nameOfAppliedTexture}"`);
-      }
+      processMeshesForModel(model, store.is3D, texture);
     } else {
       console.warn("No model selected for texture update");
     }

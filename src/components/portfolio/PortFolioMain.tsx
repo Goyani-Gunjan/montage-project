@@ -16,7 +16,7 @@ import { Button, GrayButton } from "../user/Button";
 
 const PortFolioMain = observer(() => {
   const navigate = useNavigate();
-  const [view, setView] = useState<"grid" | "list">("list");
+  const [view, setView] = useState<"grid" | "list">("grid");
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [isRenameOpen, setIsRenameOpen] = useState<boolean>(false);
   const [isLeaveOpen, setIsLeaveOpen] = useState<boolean>(false);
@@ -29,7 +29,7 @@ const PortFolioMain = observer(() => {
             label="New Design"
             icon={<FaPlus />}
             onClick={() => {
-              navigate("/designpage");
+              navigate("/design");
             }}
           />
         </div>
@@ -90,7 +90,7 @@ const PortFolioMain = observer(() => {
       <button
         className="bg-black text-white px-4 py-2 rounded-full flex items-center gap-2 fixed bottom-6 right-6 shadow-lg cursor-pointer"
         onClick={() => {
-          navigate("/designPage");
+          navigate("/design");
         }}
       >
         <FaPlus /> Start Designing

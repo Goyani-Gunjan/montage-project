@@ -15,22 +15,22 @@ const HoverEffects = ({ boundingBox, isHovered }) => {
     <>
       <Line
         points={[hoverCorners[0], hoverCorners[1]]}
-        color="red"
+        color="yellow"
         lineWidth={2}
       />
       <Line
         points={[hoverCorners[1], hoverCorners[2]]}
-        color="red"
+        color="yellow"
         lineWidth={2}
       />
       <Line
         points={[hoverCorners[2], hoverCorners[3]]}
-        color="red"
+        color="yellow"
         lineWidth={2}
       />
       <Line
         points={[hoverCorners[3], hoverCorners[0]]}
-        color="red"
+        color="yellow"
         lineWidth={2}
       />
     </>

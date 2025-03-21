@@ -86,7 +86,13 @@ const DesignPage = observer(() => {
                     rotation={[-Math.PI / 2, 0, 0]}
                     zoom={100}
                   />
-                  <OrbitControls enableRotate={manager.montageStore.is3D} />
+                  <CameraControls
+                    makeDefault
+                    minZoom={20}
+                    maxZoom={250}
+                    azimuthRotateSpeed={manager.montageStore.is3D ? 1 : 0}
+                    polarRotateSpeed={manager.montageStore.is3D ? 1 : 0}
+                  />{" "}
                 </Suspense>
               </Canvas>
               <ClosingButtons

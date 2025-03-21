@@ -32,22 +32,22 @@ const BoundingBox = ({
       ))}
       <Line
         points={[cornerSpheres[0], cornerSpheres[1]]}
-        color="red"
+        color="yellow"
         lineWidth={2}
       />
       <Line
         points={[cornerSpheres[1], cornerSpheres[2]]}
-        color="red"
+        color="yellow"
         lineWidth={2}
       />
       <Line
         points={[cornerSpheres[2], cornerSpheres[3]]}
-        color="red"
+        color="yellow"
         lineWidth={2}
       />
       <Line
         points={[cornerSpheres[3], cornerSpheres[0]]}
-        color="red"
+        color="yellow"
         lineWidth={2}
       />
     </>

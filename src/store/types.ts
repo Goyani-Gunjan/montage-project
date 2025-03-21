@@ -27,9 +27,18 @@ export interface ModelData {
   meshes: MeshData[];
   processed?: boolean;
   boundingBox?: THREE.Box3;
-  rotation: THREE.Euler;
+  rotation: [number, number, number];
   showControls?: boolean;
   nodes: Node[];
   isLocked: boolean;
   scale: [number, number, number];
+}
+export interface Module {
+  id: number;
+  name: string;
+  moduleImage: string;
+  pricePerSqft: number;
+  noOfBedrooms: number;
+  noOfBathrooms: number;
+  size: number;
 }

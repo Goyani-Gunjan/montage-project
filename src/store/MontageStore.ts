@@ -1,9 +1,10 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, toJS } from "mobx";
 import * as THREE from "three";
 import Manager from "./Manager";
-import { MeshData, ModelData } from "./types";
+import { MeshData, ModelData, Module } from "./types";
 import { MontageStoreActions } from "./actions";
-
+import { fetchGet } from "../utils/FetchApi";
+import Cookies from "js-cookie";
 class MontageStore {
   manager: Manager | null = null;
   is3D: boolean = false;
@@ -60,6 +61,48 @@ class MontageStore {
         offset.z *= -1;
 
         node.center.copy(modelCenter).add(offset);
+      });
+    }
+  }
+  async loadDesign(data: any) {
+    const moduleArr = data.moduleArr;
+
+    const token: string = Cookies.get("token");
+
+    const response = await fetchGet<Module[]>("/modules", token);
+
+    if (response.success && Array.isArray(response.data)) {
+      const modules = response.data;
+
+      const moduleMap = new Map<number, Module>();
+      modules.forEach((module: Module) => {
+        moduleMap.set(module.id, module);
+      });
+
+      moduleArr.forEach((moduleData: any) => {
+        const moduleId = moduleData.moduleId;
+        if (moduleMap.has(moduleId)) {
+          const apiModule = moduleMap.get(moduleId)!;
+          this.manager?.uiStore.addSelectedModule(apiModule);
+          const newModel = {
+            id: Date.now().toString(),
+            path: apiModule.glbFile,
+            position: new THREE.Vector3(
+              moduleData.position[0],
+              moduleData.position[1],
+              moduleData.position[2]
+            ),
+            meshes: [],
+            nodes: [],
+            rotation: moduleData.rotate,
+            isLocked: false,
+            scale: moduleData.scale,
+          };
+          // console.log(newModel);
+          this.models.push(newModel);
+        } else {
+          console.warn(`Module with ID ${moduleId} not found in API response.`);
+        }
       });
     }
   }

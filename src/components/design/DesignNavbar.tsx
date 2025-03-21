@@ -23,32 +23,28 @@ const Navbar = observer(() => {
       return;
     }
 
+    const selectedModules = manager.uiStore.selectedModules;
+    const model = manager.montageStore.models;
+    const moduleArr = selectedModules
+      .map((item, index) => {
+        return {
+          moduleId: item.id,
+          locked: model[index].isLocked,
+          scale: model[index].scale || [1, 1, 1],
+          rotate: model[index].rotation[1],
+          position: model[index].position,
+        };
+      })
+      .filter(Boolean);
+
     const payload = {
       name: manager.uiStore.currentDesignName,
       styleId: 1,
       version: "0.0.1",
       configuredStyle: manager.uiStore.configuredStyle,
-      moduleArr: [
-        {
-          moduleId: 1,
-          lock: true,
-          scale: [1, 2],
-          rotate: [90, 45],
-        },
-        {
-          moduleId: 1,
-          lock: true,
-          scale: [1, 2],
-          rotate: [90, 45],
-        },
-        {
-          moduleId: 1,
-          lock: true,
-          scale: [1, 2],
-          rotate: [90, 45],
-        },
-      ],
+      moduleArr: moduleArr,
     };
+    console.log(moduleArr);
 
     try {
       const token = Cookies.get("token");
@@ -114,7 +110,7 @@ const Navbar = observer(() => {
           placeholder="Design Name"
           value={manager.uiStore.currentDesignName}
           onChange={(e) => manager.uiStore.setCurrentDesignName(e.target.value)}
-          className="  p-1 "
+          className="p-1"
         />
       </div>
       <div className="space-x-4">
