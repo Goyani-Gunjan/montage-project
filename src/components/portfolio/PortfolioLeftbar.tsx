@@ -3,10 +3,12 @@ import { FaFolder, FaSearch, FaChevronDown } from "react-icons/fa";
 import { fetchGet } from "../../utils/FetchApi";
 import Cookies from "js-cookie";
 import { observer } from "mobx-react-lite";
-import UIStore, { Portfolio } from "../../store/UIStore";
+import { Portfolio } from "../../store/UIStore";
+import Manager from "../../store/Manager";
 
 const PortfolioLeftBar = observer(
   ({ setIsPopupOpen }: { setIsPopupOpen: (open: boolean) => void }) => {
+    const manager = new Manager();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedPortfolio, setSelectedPortfolio] = useState("My Portfolios");
     const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
@@ -21,15 +23,15 @@ const PortfolioLeftBar = observer(
       if (response.success && response.data.portFolios) {
         const fetchedPortfolios = response.data.portFolios;
         setPortfolios(fetchedPortfolios);
-        UIStore.setPortfolios(fetchedPortfolios);
+        manager.uiStore.setPortfolios(fetchedPortfolios);
 
         if (fetchedPortfolios.length > 0) {
           setSelectedPortfolio(fetchedPortfolios[0].name);
-          UIStore.setSelectedPortfolioId(fetchedPortfolios[0].id);
+          manager.uiStore.setSelectedPortfolioId(fetchedPortfolios[0].id);
         }
       } else {
         setPortfolios([]);
-        UIStore.setPortfolios([]);
+        manager.uiStore.setPortfolios([]);
       }
     };
 
@@ -57,7 +59,7 @@ const PortfolioLeftBar = observer(
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                         onClick={() => {
                           setSelectedPortfolio(portfolio.name);
-                          UIStore.setSelectedPortfolioId(portfolio.id);
+                          manager.uiStore.setSelectedPortfolioId(portfolio.id);
                           setIsDropdownOpen(false);
                         }}
                       >

@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { toJS } from "mobx";
 import * as THREE from "three";
+import Manager from "./Manager";
 
 interface Module {
   id: number;
@@ -34,13 +35,36 @@ export interface Portfolio {
   designs: Design[];
 }
 
+export interface Material {
+  id: number;
+  name: string;
+  imageURL: string;
+  price: number;
+}
+
+interface SubStyle {
+  id: number;
+  name: string;
+  materialList: Material[];
+}
+
+export interface Style {
+  id: number;
+  subStyleList: SubStyle[];
+}
+
 class UIStore {
   modules: Module[] = [];
   portfolios: Portfolio[] = [];
   textures: { [key: string]: THREE.Texture } = {};
   selectedModules: Module[] = [];
   selectedPortfolioId: string = "";
-  constructor() {
+  styles: Style | null = null;
+  selectedMaterials: { [key: number]: Material } = {};
+  currentDesignName: string = "Untitled-1";
+  manager: Manager | null = null;
+  constructor(libState: Manager) {
+    this.manager = libState;
     makeAutoObservable(this);
   }
 
@@ -49,29 +73,84 @@ class UIStore {
   }
   setPortfolios(data: Portfolio[]) {
     this.portfolios = data || [];
-    console.log(toJS(this.portfolios));
+    // console.log(toJS(this.portfolios));
   }
   setTexture(url: string, texture: THREE.Texture) {
     this.textures[url] = texture;
-    console.log(this.textures[url]);
   }
 
   addSelectedModule(module: Module) {
     this.selectedModules.push(module);
-    console.log(toJS(this.selectedModules));
+    // console.log(toJS(this.selectedModules));
   }
 
   setSelectedPortfolioId(id: string) {
     this.selectedPortfolioId = id;
   }
 
-  get totalPrice() {
+  setStyles(data: Style | null) {
+    this.styles = data;
+    console.log(toJS(this.styles));
+  }
+
+  setSelectedMaterial(subStyleId: number, material: Material) {
+    this.selectedMaterials[subStyleId] = material;
+    if (subStyleId == 1) {
+      this.manager?.montageStore.updateTextureForModel(material.imageURL);
+    }
+    if (subStyleId == 2) {
+      this.manager?.montageStore.updateTextureForModel(material.imageURL);
+    }
+    console.log(`Material changed for subStyle ${subStyleId}:`, toJS(material));
+  }
+
+  setCurrentDesignName(name: string) {
+    this.currentDesignName = name;
+  }
+
+  get configuredStyle() {
+    return Object.entries(this.selectedMaterials).map(
+      ([subStyleId, material]) => ({
+        subStyleId: parseInt(subStyleId, 10),
+        selectedMaterialId: material.id,
+      })
+    );
+  }
+
+  get totalBedrooms() {
     return this.selectedModules.reduce(
-      (total, module) => total + module.pricePerSqft,
+      (total, module) => total + module.noOfBedrooms,
       0
     );
   }
+
+  get totalSize() {
+    return this.selectedModules.reduce(
+      (total, module) => total + module.size,
+      0
+    );
+  }
+
+  get totalBathrooms() {
+    return this.selectedModules.reduce(
+      (total, module) => total + module.noOfBathrooms,
+      0
+    );
+  }
+
+  get totalPrice() {
+    const modulesPrice = this.selectedModules.reduce(
+      (total, module) => total + module.pricePerSqft,
+      0
+    );
+
+    const materialsPrice = Object.values(this.selectedMaterials).reduce(
+      (total, material) => total + material.price,
+      0
+    );
+
+    return modulesPrice + materialsPrice;
+  }
 }
 
-const moduleStore = new UIStore();
-export default moduleStore;
+export default UIStore;

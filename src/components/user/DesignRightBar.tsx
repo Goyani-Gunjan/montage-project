@@ -1,32 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Cookies from "js-cookie";
 import { fetchGet } from "../../utils/FetchApi";
 import { loadTexture } from "../../utils/Loader";
 import OrderButton from "./OrderButoon";
-
-interface Material {
-  id: number;
-  name: string;
-  imageURL: string;
-  price: number;
-}
-
-interface SubStyle {
-  id: number;
-  name: string;
-  materialList: Material[];
-}
-
-interface Style {
-  id: number;
-  subStyleList: SubStyle[];
-}
+import { Material, Style } from "../../store/UIStore";
+import Manager from "../../store/Manager";
 
 const RightBar = () => {
+  const manager = new Manager();
   const [styles, setStyles] = useState<Style | null>(null);
   const [selectedMaterials, setSelectedMaterials] = useState<{
     [key: number]: Material;
   }>({});
+  const isDataFetched = useRef(false); // Track if data is fetched
 
   const fetchStyles = async () => {
     const token: string | null = Cookies.get("token") ?? null;
@@ -34,12 +20,17 @@ const RightBar = () => {
 
     if (response.success) {
       setStyles(response.data);
+      manager.uiStore.setStyles(response.data);
 
       const defaultSelectedMaterials: { [key: number]: Material } = {};
       response?.data?.subStyleList.forEach((subStyle) => {
         if (subStyle.materialList.length > 0) {
           defaultSelectedMaterials[subStyle.id] = subStyle.materialList[0];
-          loadTexture(subStyle.materialList[0].imageURL);
+          manager.uiStore.setSelectedMaterial(
+            subStyle.id,
+            subStyle.materialList[0]
+          );
+          // loadTexture(subStyle.materialList[0].imageURL);
         }
       });
       setSelectedMaterials(defaultSelectedMaterials);
@@ -49,7 +40,10 @@ const RightBar = () => {
   };
 
   useEffect(() => {
-    fetchStyles();
+    if (!isDataFetched.current) {
+      fetchStyles();
+      isDataFetched.current = true; // Mark data as fetched
+    }
   }, []);
 
   const handleMaterialClick = (subStyleId: number, material: Material) => {
@@ -57,15 +51,19 @@ const RightBar = () => {
       ...prev,
       [subStyleId]: material,
     }));
-    loadTexture(material.imageURL);
+    manager.uiStore.setSelectedMaterial(subStyleId, material);
+    // loadTexture(material.imageURL);
+
+    // console.log("Configured Style:", manager.uiStore.configuredStyle);
   };
 
   return (
     <div>
-      <div className="w-85 h-screen pb-36 bg-white p-4 border-l border-gray-200 overflow-y-auto fixed right-0">
+      <div className="w-85 top-[72px] h-screen pb-36 bg-white p-4 border-l border-gray-200 overflow-y-auto fixed right-0">
         <div className="flex items-center justify-center mb-4 mt-3">
-          <h2 className="text-lg font-semibold text-center">
-            0 Bed 0.5 Bath 256 sqft
+          <h2 className="text-2xl font-semibold text-center">
+            {manager.uiStore.totalBedrooms} Bed {manager.uiStore.totalBathrooms}{" "}
+            Bath {manager.uiStore.totalSize} sqft
           </h2>
         </div>
 

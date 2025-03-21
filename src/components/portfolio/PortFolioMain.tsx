@@ -1,51 +1,50 @@
 import {
-  FaPlus,
-  FaTh,
-  FaList,
   FaChevronDown,
   FaEllipsisH,
+  FaList,
+  FaPlus,
+  FaTh,
 } from "react-icons/fa";
-
-import PortFolioGrid from "./PortFolioGrid";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import Button from "../user/Button";
-import RenamePopup from "./RenamePopup";
-import LeavePopup from "./LeavePopup";
-import PortfolioList from "./PortfolioList";
 import { observer } from "mobx-react-lite";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import LeavePopup from "./LeavePopup";
+import PortFolioGrid from "./PortFolioGrid";
+import PortfolioList from "./PortfolioList";
+import RenamePopup from "./RenamePopup";
+import { Button, GrayButton } from "../../utils/Button";
 
 const PortFolioMain = observer(() => {
   const navigate = useNavigate();
-  const [view, setView] = useState<"grid" | "list">("list");
+  const [view, setView] = useState<"grid" | "list">("grid");
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [isRenameOpen, setIsRenameOpen] = useState<boolean>(false);
   const [isLeaveOpen, setIsLeaveOpen] = useState<boolean>(false);
 
   return (
     <main className="flex-1 p-6 relative">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4 ">
         <div className="flex gap-4">
           <Button
             label="New Design"
             icon={<FaPlus />}
             onClick={() => {
-              navigate("/designpage");
+              navigate("/design");
             }}
           />
         </div>
         <div className="flex gap-4">
-          <Button
+          <GrayButton
             label="Grid"
             icon={<FaTh />}
             onClick={() => setView("grid")}
           />
-          <Button
+          <GrayButton
             label="List"
             icon={<FaList />}
             onClick={() => setView("list")}
           />
-          <Button
+          <GrayButton
             label="Date Created"
             icon={<FaChevronDown />}
             onClick={() => alert("Sort by Date...")}
@@ -91,7 +90,7 @@ const PortFolioMain = observer(() => {
       <button
         className="bg-black text-white px-4 py-2 rounded-full flex items-center gap-2 fixed bottom-6 right-6 shadow-lg cursor-pointer"
         onClick={() => {
-          navigate("/designPage");
+          navigate("/design");
         }}
       >
         <FaPlus /> Start Designing

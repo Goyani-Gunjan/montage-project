@@ -82,7 +82,7 @@ export const fetchPost = async <T = unknown>(
   method: "POST" | "PUT" | "PATCH" = "POST",
   contentType: string = "application/json"
 ): Promise<ApiResponse<T>> => {
-  const BASE_URL = import.meta.env.BASE_URL;
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
 
   if (!navigator.onLine) {
     return { success: false, internet: true, message: "Connection Issue" };
@@ -103,12 +103,11 @@ export const fetchPost = async <T = unknown>(
 
   try {
     const request = await fetch(`${BASE_URL}${pathName}`, options);
-
     if (!request.ok) {
       const errorResponse = await request.json();
       return {
         success: false,
-        message: errorResponse?.message || "Error occurred",
+        message: errorResponse?.error || "Error occurred",
       };
     }
 

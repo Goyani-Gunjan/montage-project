@@ -10,7 +10,7 @@ const MainPage = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen overflow-y-hidden">
       <PortfolioNavbar />
       <div className="flex flex-grow">
         <PortfolioLeftBar setIsPopupOpen={setIsPopupOpen} />

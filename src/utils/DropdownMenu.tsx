@@ -3,7 +3,7 @@ import { MdContentCopy, MdDelete, MdLock } from "react-icons/md";
 const DropdownMenu: React.FC<{ isOpen: boolean }> = ({ isOpen }) => {
   return (
     isOpen && (
-      <div className="absolute left-0 top-10 w-screen bg-white shadow-lg border border-gray-200 rounded-md p-2 z-50">
+      <div className="absolute left-0 top-10 w-full bg-white shadow-lg border border-gray-200 rounded-md p-2 z-20 ml-10">
         <p className="text-sm text-gray-500 px-2">View Module details</p>
 
         <button className="flex items-center w-full px-2 py-2 hover:bg-gray-100 rounded cursor-pointer ">
