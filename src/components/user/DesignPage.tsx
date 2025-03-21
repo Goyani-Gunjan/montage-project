@@ -28,6 +28,7 @@ const DesignPage = observer(() => {
   const [activeSidebar, setActiveSidebar] = useState<SidebarType>("Design");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isRightBarOpen, setIsRightBarOpen] = useState(true);
+  const [selectedSidebar, setSelectedSidebar] = useState("Design");
 
   const handlePointerMissed = () => {
     manager.montageStore.toggleShowControls(
@@ -44,21 +45,32 @@ const DesignPage = observer(() => {
     setIsRightBarOpen((prev) => !prev);
   };
 
+  const handleSidebarChange = (name: string) => {
+    setSelectedSidebar(name);
+    if (name !== "Bookmark") {
+      setActiveSidebar(name as "Design" | "Modules");
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen overflow-y-auto">
       <Navbar />
       <div className="flex flex-1">
-        <Sidebar setActiveSidebar={setActiveSidebar} />
+        <Sidebar
+          setActiveSidebar={setActiveSidebar}
+          selectedSidebar={selectedSidebar}
+          handleSidebarChange={handleSidebarChange}
+        />
         <div className="flex-1 flex flex-col">
           {isSidebarOpen &&
             (activeSidebar === "Design" ? (
-              <DesignLeftBar />
+              <DesignLeftBar handleSidebarChange={handleSidebarChange} />
             ) : (
               <ModuleLeftbar />
             ))}
           <div className="flex items-center justify-center">
             <div className="w-full h-screen ml-14 mt-10 relative">
-              <div className="absolute top-22 right-90 z-10">
+              <div className="absolute top-14 right-90 z-10">
                 <TopButtons />
               </div>
               <Canvas shadows onPointerMissed={() => handlePointerMissed()}>

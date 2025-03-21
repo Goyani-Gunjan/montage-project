@@ -116,6 +116,27 @@ class UIStore {
     );
   }
 
+  get totalBedrooms() {
+    return this.selectedModules.reduce(
+      (total, module) => total + module.noOfBedrooms,
+      0
+    );
+  }
+
+  get totalSize() {
+    return this.selectedModules.reduce(
+      (total, module) => total + module.size,
+      0
+    );
+  }
+
+  get totalBathrooms() {
+    return this.selectedModules.reduce(
+      (total, module) => total + module.noOfBathrooms,
+      0
+    );
+  }
+
   get totalPrice() {
     const modulesPrice = this.selectedModules.reduce(
       (total, module) => total + module.pricePerSqft,

@@ -26,8 +26,7 @@ const ModuleList = observer(({ searchValue, moduleType }: ModuleListProps) => {
       {filteredModules.map((module) => (
         <div
           key={module.id}
-          className="relative w-full rounded flex flex-col items-start group bg-white hover:border hover:border-gray-500 border border-gray-300"
-          onClick={() => handleModuleClick(module)}
+          className="relative  w-full rounded flex flex-col items-start group bg-white hover:border hover:border-gray-500 border border-gray-300"
           draggable
           onDragStart={(e) => handleDragStart(e, module)}
         >

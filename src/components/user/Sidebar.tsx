@@ -3,9 +3,15 @@ import { FaBookmark, FaCubes, FaPencilRuler } from "react-icons/fa";
 
 type SidebarProps = {
   setActiveSidebar: (sidebar: "Design" | "Modules") => void;
+  selectedSidebar: string;
+  handleSidebarChange: (name: string) => void;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ setActiveSidebar }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  setActiveSidebar,
+  selectedSidebar,
+  handleSidebarChange,
+}) => {
   const menuItems = [
     {
       name: "Design",
@@ -22,15 +28,6 @@ const Sidebar: React.FC<SidebarProps> = ({ setActiveSidebar }) => {
     },
   ];
 
-  const [selectedSidebar, setSelectedSidebar] = useState("Design");
-
-  const handleChange = (name) => {
-    setSelectedSidebar(name);
-    if (name !== "Bookmark") {
-      setActiveSidebar(name as "Design" | "Modules");
-    }
-  };
-
   return (
     <div className="fixed top-[72px] left-0  h-screen w-20 bg-gray-100 shadow-md flex flex-col items-center pt-4 space-y-1 z-10">
       {menuItems.map((item) => (
@@ -39,7 +36,7 @@ const Sidebar: React.FC<SidebarProps> = ({ setActiveSidebar }) => {
           className={`flex flex-col items-center w-18 m-2 p-2 rounded text-sm hover:bg-gray-300 cursor-pointer ${
             selectedSidebar === item.name ? "bg-gray-300" : ""
           }`}
-          onClick={() => handleChange(item.name)}
+          onClick={() => handleSidebarChange(item.name)}
         >
           {item.icon}
           <span>{item.name}</span>

@@ -3,7 +3,13 @@ import { FaList, FaTh } from "react-icons/fa";
 import DesignList from "./DesignList";
 import DesignGrid from "./DesignGrid";
 
-const DesignLeftBar = () => {
+type DesignLeftBarProps = {
+  handleSidebarChange: (name: string) => void;
+};
+
+const DesignLeftBar: React.FC<DesignLeftBarProps> = ({
+  handleSidebarChange,
+}) => {
   const [isListView, setIsListView] = useState(false);
 
   return (
@@ -28,7 +34,11 @@ const DesignLeftBar = () => {
       <hr className=" mt-2 border border-gray-200" />
 
       <div className="relative mt-2 space-y-4  h-[calc(100vh-16rem)] overflow-y-auto overflow-x-hidden flex-1 z-0">
-        {isListView ? <DesignList /> : <DesignGrid />}
+        {isListView ? (
+          <DesignList />
+        ) : (
+          <DesignGrid handleSidebarChange={handleSidebarChange} />
+        )}
       </div>
     </div>
   );

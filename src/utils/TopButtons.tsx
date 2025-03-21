@@ -1,7 +1,7 @@
 // TopButtons.tsx
 import React from "react";
 import { FaAlignLeft, FaLayerGroup, FaCube, FaImage } from "react-icons/fa";
-import { CanvasButton } from "../components/user/Button";
+import { CanvasButton } from "./Button";
 import Manager from "../store/Manager";
 
 const TopButtons: React.FC = () => {
