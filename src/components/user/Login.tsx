@@ -20,7 +20,11 @@ const Login = () => {
     <div className="flex flex-col min-h-screen bg-gray-100">
       <nav className="w-full bg-white shadow p-4 flex items-center">
         <div className="flex items-center space-x-2">
-          <img src="assets/cinapp.png" alt="Montage Logo" className="h-6" />
+          <img
+            src="assets/Montage-Logo.svg"
+            alt="Montage Logo"
+            className="h-6"
+          />
           <span className="font-semibold text-lg">Montage</span>
         </div>
       </nav>

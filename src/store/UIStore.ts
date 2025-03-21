@@ -90,7 +90,7 @@ class UIStore {
 
   setStyles(data: Style | null) {
     this.styles = data;
-    // console.log(toJS(this.styles));
+    console.log(toJS(this.styles));
   }
 
   setSelectedMaterial(subStyleId: number, material: Material) {
@@ -101,6 +101,7 @@ class UIStore {
     if (subStyleId == 2) {
       this.manager?.montageStore.updateTextureForModel(material.imageURL);
     }
+    console.log(`Material changed for subStyle ${subStyleId}:`, toJS(material));
   }
 
   setCurrentDesignName(name: string) {

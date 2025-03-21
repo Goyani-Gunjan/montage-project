@@ -1,7 +1,5 @@
 import { observer } from "mobx-react";
 import { FaSave } from "react-icons/fa";
-import { fetchPost } from "../../utils/FetchApi";
-import Cookies from "js-cookie";
 import Manager from "../../store/Manager";
 
 const Navbar = observer(() => {
@@ -17,90 +15,11 @@ const Navbar = observer(() => {
     ? selectedPortfolio.name
     : "my portfolio";
 
-  const handleSave = async () => {
-    if (!selectedPortfolioId) {
-      console.error("No portfolio selected.");
-      return;
-    }
-
-    const selectedModules = manager.uiStore.selectedModules;
-    const model = manager.montageStore.models;
-    const moduleArr = selectedModules
-      .map((item, index) => {
-        return {
-          moduleId: item.id,
-          locked: model[index].isLocked,
-          scale: model[index].scale || [1, 1, 1],
-          rotate: model[index].rotation[1],
-          position: model[index].position,
-        };
-      })
-      .filter(Boolean);
-
-    const payload = {
-      name: manager.uiStore.currentDesignName,
-      styleId: 1,
-      version: "0.0.1",
-      configuredStyle: manager.uiStore.configuredStyle,
-      moduleArr: moduleArr,
-    };
-    console.log(moduleArr);
-
-    try {
-      const token = Cookies.get("token");
-      const response = await fetchPost(
-        `/design?portfolioId=${selectedPortfolioId}`,
-        token,
-        JSON.stringify(payload)
-      );
-
-      if (!response.success) {
-        console.error("Error saving design:", response.message);
-        alert("Failed to save design. Please try again.");
-        return;
-      }
-
-      const designData = response.data;
-      console.log("Design saved successfully:", designData);
-
-      const designId = designData?.id;
-      if (!designId) {
-        throw new Error("Design ID not found in response!");
-      }
-
-      const portfolioDesignResponse = await fetchPost(
-        `/portfolio/${selectedPortfolioId}/design`,
-        token,
-        JSON.stringify({ designIds: [designId] })
-      );
-
-      if (!portfolioDesignResponse.success) {
-        console.error(
-          "Error fetching design details:",
-          portfolioDesignResponse.message
-        );
-        alert("Failed to fetch design details. Please try again.");
-        return;
-      }
-
-      const portfolioDesignData = portfolioDesignResponse.data;
-      console.log("Design details fetched successfully:", portfolioDesignData);
-
-      alert("Design saved and details fetched successfully!");
-    } catch (error) {
-      console.error("Error:", error);
-      alert("An error occurred. Please try again.");
-    }
-  };
-
   return (
     <div className="fixed top-0 left-0 w-full flex justify-between items-center p-4 shadow-md bg-white z-10">
       <div className="flex items-center space-x-5">
         <img src="assets/Montage-Logo.svg" />
-        <button
-          className="text-xl cursor-pointer hover:bg-gray-300"
-          onClick={handleSave}
-        >
+        <button className="text-xl cursor-pointer hover:bg-gray-300">
           <FaSave className="p-1" size={30} />
         </button>
         <span className="font-semibold">{portfolioName}</span>
