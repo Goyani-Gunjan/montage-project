@@ -1,23 +1,41 @@
 import { ModelData } from "./types";
-export const processMeshesForModel = (model: ModelData, is3D: boolean) => {
+import * as THREE from "three";
+const textureLoader = new THREE.TextureLoader();
+
+export const processMeshesForModel = (
+  model: ModelData,
+  is3D: boolean,
+  externalWallURL?: string,
+  internalWallURL?: string
+) => {
   model.meshes.forEach((mesh) => {
     if (mesh) {
-      // const geometry = mesh.geometry.clone();
-      // geometry.applyMatrix4(new THREE.Matrix4().copy(mesh.matrix));
-
-      // const scaleMat = new THREE.Matrix4().makeScale(...scale);
-      // geometry.applyMatrix4(scaleMat);
-      // geometry.computeBoundingBox();
-      // geometry.computeBoundingSphere();
-
       if (is3D) {
         if (mesh.name.includes("Node")) {
-          if (!mesh.processed) {
+          if (mesh.processed) {
             mesh.material = mesh.material.clone();
             mesh.processed = true;
           }
           mesh.material.color.set("cyan");
           mesh.visible = true;
+        }
+        if (mesh.name.includes("External_Wall")) {
+          mesh.material = mesh.material.clone();
+          const texture = textureLoader.load("/wood.jpg");
+          texture.wrapS = THREE.RepeatWrapping;
+          texture.wrapT = THREE.RepeatWrapping;
+          texture.colorSpace = THREE.LinearSRGBColorSpace;
+          mesh.material.map = texture;
+          mesh.material.needsUpdate = true;
+        }
+        if (mesh.name.includes("Internal_Wall")) {
+          mesh.material = mesh.material.clone();
+          const texture = textureLoader.load("/wood.jpg");
+          texture.wrapS = THREE.RepeatWrapping;
+          texture.wrapT = THREE.RepeatWrapping;
+          texture.colorSpace = THREE.LinearSRGBColorSpace;
+          mesh.material.map = texture;
+          mesh.material.needsUpdate = true;
         } else {
           mesh.visible = true;
         }
