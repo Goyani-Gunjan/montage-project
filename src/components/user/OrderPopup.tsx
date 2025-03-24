@@ -24,7 +24,7 @@ const OrderPopup: React.FC<OrderPopupProps> = ({ onClose }) => {
           moduleId: item.id,
           locked: model[index].isLocked,
           scale: model[index].scale || [1, 1, 1],
-          rotate: model[index].rotation[1],
+          rotation: model[index].rotation[1],
           position: model[index].position,
         };
       })
@@ -37,35 +37,53 @@ const OrderPopup: React.FC<OrderPopupProps> = ({ onClose }) => {
       configuredStyle: manager.uiStore.configuredStyle,
       moduleArr: moduleArr,
     };
-    console.log(moduleArr);
 
     try {
-      const token = Cookies.get("token");
-      const response = await fetchPost(
+      const token: string | undefined = Cookies.get("token");
+
+      // Save the design
+      const designResponse = await fetchPost(
         `/design?portfolioId=${selectedPortfolioId}`,
         token,
         JSON.stringify(payload)
       );
 
-      if (!response.success) {
-        console.error("Error saving design:", response.message);
-        alert(response.message);
+      if (!designResponse.success) {
+        console.error("Error saving design:", designResponse.message);
+        alert(designResponse.message);
         return;
       }
 
-      const designData = response.data;
-      console.log("Design saved successfully:", designData);
-
+      const designData = designResponse.data;
       const designId = designData?.id;
+
       if (!designId) {
         throw new Error("Design ID not found in response!");
       }
-
-      const portfolioDesignResponse = await fetchPost(
-        `/portfolio/${selectedPortfolioId}/design`,
-        token,
-        JSON.stringify({ designIds: [designId] })
-      );
+      const [portfolioDesignResponse, stripeCheckoutResponse] =
+        await Promise.all([
+          fetchPost(
+            `/portfolio/${selectedPortfolioId}/design`,
+            token,
+            JSON.stringify({ designIds: [designId] })
+          ),
+          fetchPost(
+            "/stripe-checkout",
+            token,
+            JSON.stringify({
+              designId: designId,
+              packageId: "5e489a12-0067-4cf8-be1e-58cd8594e942",
+              packageAddonsIds: ["9c515ced-cee4-4ad6-8723-1a747ad367c1"],
+              additionalOptIds: [1],
+              address: {
+                firstName: "John",
+                lastName: "Doe",
+                phone: "123456789",
+                email: "pruthav@hexacoder.com",
+              },
+            })
+          ),
+        ]);
 
       if (!portfolioDesignResponse.success) {
         console.error(
@@ -76,28 +94,6 @@ const OrderPopup: React.FC<OrderPopupProps> = ({ onClose }) => {
         return;
       }
 
-      const portfolioDesignData = portfolioDesignResponse.data;
-      console.log("Design details fetched successfully:", portfolioDesignData);
-
-      const stripeCheckoutPayload = {
-        designId: designId,
-        packageId: "5e489a12-0067-4cf8-be1e-58cd8594e942",
-        packageAddonsIds: ["9c515ced-cee4-4ad6-8723-1a747ad367c1"],
-        additionalOptIds: [1],
-        address: {
-          firstName: "John",
-          lastName: "Doe",
-          phone: "123456789",
-          email: "pruthav@hexacoder.com",
-        },
-      };
-
-      const stripeCheckoutResponse = await fetchPost(
-        "/stripe-checkout",
-        token,
-        JSON.stringify(stripeCheckoutPayload)
-      );
-      console.log(stripeCheckoutResponse);
       if (!stripeCheckoutResponse.success) {
         console.error(
           "Error creating Stripe checkout session:",
