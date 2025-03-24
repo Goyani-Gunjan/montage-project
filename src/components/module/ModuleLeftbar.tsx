@@ -23,7 +23,7 @@ const ModuleLeftBar = () => {
 
   useEffect(() => {
     const fetchModules = async () => {
-      const token: string = Cookies.get("token");
+      const token: string | undefined = Cookies.get("token");
 
       const response = await fetchGet<Module[]>("/modules", token);
 

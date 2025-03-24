@@ -21,10 +21,14 @@ interface HtmlListProps {
 
 const HtmlList = observer(({ modelId }: HtmlListProps) => {
   const montageStore = manager.montageStore;
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const { gl, scene, camera } = useThree();
 
-  const toggleDropdown = (e: React.PointerEvent) => {
+  if (!montageStore) {
+    return <div>Error: montageStore is not available</div>;
+  }
+
+  const toggleDropdown = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsDropdownOpen((prev) => !prev);
   };
@@ -33,9 +37,11 @@ const HtmlList = observer(({ modelId }: HtmlListProps) => {
     const htmlElements = document.querySelectorAll('[data-html="true"]');
     const originalVisibility: boolean[] = [];
     const originalClearColor = new THREE.Color();
-    gl.getClearColor(originalClearColor);
     const originalClearAlpha = gl.getClearAlpha();
+
+    gl.getClearColor(originalClearColor);
     gl.setClearColor("white", 1);
+
     htmlElements.forEach((el, index) => {
       originalVisibility[index] = el.classList.contains("visible");
       el.classList.remove("visible");
@@ -65,9 +71,8 @@ const HtmlList = observer(({ modelId }: HtmlListProps) => {
   };
 
   const handleDropdownAction =
-    (action: DropdownAction) => (e: React.PointerEvent) => {
+    (action: DropdownAction) => (e: React.MouseEvent) => {
       e.stopPropagation();
-
       switch (action) {
         case DropdownAction.Delete:
           montageStore.deleteModel(modelId);
@@ -139,7 +144,7 @@ const HtmlList = observer(({ modelId }: HtmlListProps) => {
           style={styles.customButton}
           onClick={(e) => {
             e.stopPropagation();
-            montageStore.flipModelHorizontally(modelId);
+            montageStore.flipModelHorizontally(modelId); // Ensure flipModelHorizontally is defined in montageStore
           }}
         >
           <RiFlipHorizontalFill size={20} />
@@ -149,7 +154,7 @@ const HtmlList = observer(({ modelId }: HtmlListProps) => {
           style={styles.customButton}
           onClick={(e) => {
             e.stopPropagation();
-            montageStore.flipModelVertically(modelId);
+            montageStore.flipModelVertically(modelId); // Ensure flipModelVertically is defined in montageStore
           }}
         >
           <RiFlipVerticalFill size={20} />

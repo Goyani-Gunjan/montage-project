@@ -1,14 +1,22 @@
-// useModelInteraction.js
+// useModelInteraction.ts
 import { useThree } from "@react-three/fiber";
 import gsap from "gsap";
 import { useCallback, useRef } from "react";
 import * as THREE from "three";
 import Manager from "../store/Manager";
 import { findNearestAngle, performRaycastFromMouse } from "../utils/utils";
-export const useModelInteraction = (id) => {
+
+interface DragData {
+  initialPointer: THREE.Vector3;
+  modelCenter: THREE.Vector3;
+  initialRotation: number;
+  latestAngleDiff: number;
+}
+
+export const useModelInteraction = (id: string) => {
   const manager = new Manager();
   const { camera, gl } = useThree();
-  const dragData = useRef({});
+  const dragData = useRef<{ [key: number]: DragData }>({});
 
   const onMove = useCallback(
     (e: React.PointerEvent, i: number) => {
@@ -52,7 +60,9 @@ export const useModelInteraction = (id) => {
   const onDown = useCallback(
     (e: React.PointerEvent, i: number) => {
       e.stopPropagation();
-      e.target.setPointerCapture(e.pointerId);
+
+      const target = e.target as HTMLElement;
+      target.setPointerCapture(e.pointerId);
 
       const model = manager.montageStore.models.find((m) => m.id === id);
       if (!model) return;
@@ -83,7 +93,9 @@ export const useModelInteraction = (id) => {
   const onUp = useCallback(
     (e: React.PointerEvent, i: number) => {
       e.stopPropagation();
-      e.target.releasePointerCapture(e.pointerId);
+
+      const target = e.target as HTMLElement;
+      target.releasePointerCapture(e.pointerId);
 
       const model = manager.montageStore.models.find((m) => m.id === id);
       if (!model) return;

@@ -23,7 +23,7 @@ interface RequestOptions {
  */
 export const fetchGet = async <T = unknown>(
   pathName: string,
-  token: string | null,
+  token: string | undefined,
   method: "GET" | "PUT" | "DELETE" = "GET"
 ): Promise<ApiResponse<T>> => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -77,7 +77,7 @@ export const fetchGet = async <T = unknown>(
  */
 export const fetchPost = async <T = unknown>(
   pathName: string,
-  token = null,
+  token: string | undefined = undefined,
   body: string | null = null,
   method: "POST" | "PUT" | "PATCH" = "POST",
   contentType: string = "application/json"
@@ -103,12 +103,11 @@ export const fetchPost = async <T = unknown>(
 
   try {
     const request = await fetch(`${BASE_URL}${pathName}`, options);
-    console.log(request);
     if (!request.ok) {
       const errorResponse = await request.json();
       return {
         success: false,
-        message: errorResponse?.message || "Error occurred",
+        message: errorResponse?.error || "Error occurred",
       };
     }
 

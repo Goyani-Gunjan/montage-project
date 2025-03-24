@@ -12,7 +12,7 @@ export const performRaycastFromMouse = (
   e = { clientX: 0, clientY: 0 },
   camera: THREE.Camera,
   gl: THREE.WebGLRenderer,
-  plane: THREE.Mesh
+  plane: THREE.Mesh | null
 ) => {
   const mouse = new THREE.Vector2();
   const raycaster = new THREE.Raycaster();

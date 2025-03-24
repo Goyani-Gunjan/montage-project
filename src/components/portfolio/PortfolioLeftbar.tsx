@@ -3,8 +3,8 @@ import { FaFolder, FaSearch, FaChevronDown } from "react-icons/fa";
 import { fetchGet } from "../../utils/FetchApi";
 import Cookies from "js-cookie";
 import { observer } from "mobx-react-lite";
-import { Portfolio } from "../../store/UIStore";
 import Manager from "../../store/Manager";
+import { Portfolio } from "../../store/types";
 
 const PortfolioLeftBar = observer(
   ({ setIsPopupOpen }: { setIsPopupOpen: (open: boolean) => void }) => {
@@ -14,13 +14,13 @@ const PortfolioLeftBar = observer(
     const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
 
     const fetchPortfolios = async () => {
-      const token: string = Cookies.get("token");
+      const token: string | undefined = Cookies.get("token");
       const response = await fetchGet<{ portFolios: Portfolio[] }>(
         "/portfolios",
         token
       );
 
-      if (response.success && response.data.portFolios) {
+      if (response.success && response.data?.portFolios) {
         const fetchedPortfolios = response.data.portFolios;
         setPortfolios(fetchedPortfolios);
         manager.uiStore.setPortfolios(fetchedPortfolios);

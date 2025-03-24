@@ -33,11 +33,11 @@ export const CanvasButton: React.FC<ButtonProps> = ({
 }) => {
   return (
     <button
-      className="bg-gray-200 px-4 py-2 rounded flex items-center gap-2 cursor-pointer group relative hover:bg-gray-400"
+      className="bg-gray-200 px-4 py-2 rounded flex items-center gap-2 cursor-pointer group relative hover:bg-gray-400 "
       onClick={onClick}
     >
       {icon}
-      <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute top-10  whitespace-nowrap bg-gray-700 text-white text-sm px-2 py-1 rounded ">
+      <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute top-10  whitespace-nowrap bg-gray-700 text-white text-sm px-2 py-1 rounded pointer-events-none">
         {label}
       </span>
     </button>
@@ -55,7 +55,7 @@ export const SidebarButton: React.FC<ButtonProps> = ({
       onClick={onClick}
     >
       {icon}
-      <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute top-9  whitespace-nowrap bg-gray-700 text-white text-sm px-2 py-1 rounded ">
+      <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute top-9  whitespace-nowrap bg-gray-700 text-white text-sm px-2 py-1 rounded pointer-events-none">
         {label}
       </span>
     </button>

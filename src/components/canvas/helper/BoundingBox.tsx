@@ -1,5 +1,13 @@
 import { Html, Line } from "@react-three/drei";
-
+import * as THREE from "three";
+interface BoundingBoxProps {
+  boundingBox: THREE.Box3 | null;
+  isSelected: boolean;
+  cornerSpheres: THREE.Vector3[];
+  onDown: (e: React.PointerEvent, index: number) => void;
+  onMove: (e: React.PointerEvent, index: number) => void;
+  onUp: (e: React.PointerEvent, index: number) => void;
+}
 const BoundingBox = ({
   boundingBox,
   isSelected,
@@ -7,7 +15,7 @@ const BoundingBox = ({
   onDown,
   onMove,
   onUp,
-}) => {
+}: BoundingBoxProps) => {
   if (!isSelected || !boundingBox || cornerSpheres.length !== 4) return null;
 
   return (
@@ -15,9 +23,9 @@ const BoundingBox = ({
       {cornerSpheres.map((corner, i) => (
         <Html key={i} position={corner} center>
           <div
-            onPointerDown={(e) => onDown(e as unknown as PointerEvent, i)}
-            onPointerMove={(e) => onMove(e as unknown as PointerEvent, i)}
-            onPointerUp={(e) => onUp(e as unknown as PointerEvent, i)}
+            onPointerDown={(e) => onDown(e, i)}
+            onPointerMove={(e) => onMove(e, i)}
+            onPointerUp={(e) => onUp(e, i)}
             style={{
               width: "16px",
               height: "16px",

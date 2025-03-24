@@ -1,6 +1,5 @@
 import {
   CameraControls,
-  OrbitControls,
   OrthographicCamera,
   PerspectiveCamera,
 } from "@react-three/drei";
@@ -20,35 +19,42 @@ import {
   ClosingButtons,
   RightBarToggleButton,
 } from "../../utils/ClosingButtons";
+import { ModelData } from "../../store/types";
 
 type SidebarType = "Design" | "Modules";
 
-const DesignPage = observer(() => {
+interface SidebarChangeHandler {
+  (name: string): void;
+}
+
+const DesignPage: React.FC = observer(() => {
   const manager = new Manager();
   const [activeSidebar, setActiveSidebar] = useState<SidebarType>("Design");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isRightBarOpen, setIsRightBarOpen] = useState(true);
-  const [selectedSidebar, setSelectedSidebar] = useState("Design");
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
+  const [isRightBarOpen, setIsRightBarOpen] = useState<boolean>(true);
+  const [selectedSidebar, setSelectedSidebar] = useState<string>("Design");
 
-  const handlePointerMissed = () => {
-    manager.montageStore.toggleShowControls(
-      manager.montageStore.selectedModelId,
-      false
-    );
+  const handlePointerMissed = (): void => {
+    if (manager.montageStore.selectedModelId) {
+      manager.montageStore.toggleShowControls(
+        manager.montageStore.selectedModelId,
+        false
+      );
+    }
   };
 
-  const toggleSidebar = () => {
+  const toggleSidebar = (): void => {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  const toggleRightBar = () => {
+  const toggleRightBar = (): void => {
     setIsRightBarOpen((prev) => !prev);
   };
 
-  const handleSidebarChange = (name: string) => {
+  const handleSidebarChange: SidebarChangeHandler = (name) => {
     setSelectedSidebar(name);
     if (name !== "Bookmark") {
-      setActiveSidebar(name as "Design" | "Modules");
+      setActiveSidebar(name as SidebarType);
     }
   };
 
@@ -73,20 +79,24 @@ const DesignPage = observer(() => {
               <div className="absolute top-14 right-90 z-10">
                 <TopButtons />
               </div>
-              <Canvas shadows onPointerMissed={() => handlePointerMissed()}>
+              <Canvas shadows onPointerMissed={handlePointerMissed}>
                 <Suspense fallback={null}>
                   <ambientLight intensity={1} />
                   <directionalLight position={[5, 5, 5]} intensity={1} />
                   <CanvasWithDrop />
-                  <gridHelper args={[100, 100, "red", "lightgray"]} />
-                  {manager.montageStore.models.map((model, index) => (
-                    <Model
-                      key={index}
-                      path={model.path}
-                      position={model.position}
-                      id={model.id}
-                    />
-                  ))}
+                  {!manager.montageStore.is3D && (
+                    <gridHelper args={[100, 100, "red", "lightgray"]} />
+                  )}
+                  {manager.montageStore.models.map(
+                    (model: ModelData, index: number) => (
+                      <Model
+                        key={index}
+                        path={model.path}
+                        position={model.position}
+                        id={model.id}
+                      />
+                    )
+                  )}
                   <PerspectiveCamera
                     makeDefault={manager.montageStore.is3D}
                     fov={75}
@@ -104,7 +114,7 @@ const DesignPage = observer(() => {
                     maxZoom={250}
                     azimuthRotateSpeed={manager.montageStore.is3D ? 1 : 0}
                     polarRotateSpeed={manager.montageStore.is3D ? 1 : 0}
-                  />{" "}
+                  />
                 </Suspense>
               </Canvas>
               <ClosingButtons
@@ -118,7 +128,7 @@ const DesignPage = observer(() => {
             </div>
           </div>
         </div>
-        {isRightBarOpen && <RightBar />}
+        {isRightBarOpen && <RightBar isOpen={isRightBarOpen} />}
       </div>
     </div>
   );

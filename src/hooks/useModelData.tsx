@@ -2,8 +2,13 @@ import { useGLTF } from "@react-three/drei";
 import { useMemo } from "react";
 import * as THREE from "three";
 import Manager from "../store/Manager";
+import { MeshData, Node } from "../store/types";
 
-export const useModelData = (id, path, position) => {
+export const useModelData = (
+  id: string,
+  path: string,
+  position: THREE.Vector3
+): MeshData[] => {
   const manager = new Manager();
 
   const { scene } = useGLTF(path);
@@ -18,8 +23,8 @@ export const useModelData = (id, path, position) => {
   const tempMeshes = useMemo(() => {
     if (!scene) return [];
 
-    const meshesArray = [];
-    const nodesArray = [];
+    const meshesArray: MeshData[] = [];
+    const nodesArray: Node[] = [];
     const clonedScene = scene.clone();
     clonedScene.updateMatrixWorld(true);
 
@@ -34,19 +39,20 @@ export const useModelData = (id, path, position) => {
       .copy(clonedScene.matrixWorld)
       .invert();
 
-    clonedScene.traverse((child) => {
+    clonedScene.traverse((child: any) => {
       if (
         child.name.includes("Roof") ||
         (child.parent?.name && child.parent.name.includes("Ceiling"))
       )
         return;
+
       if (child.isMesh && child.geometry) {
         child.updateMatrixWorld(true);
         const relativeMatrix = new THREE.Matrix4().multiplyMatrices(
           parentInverseMatrix,
           child.matrixWorld
         );
-        const meshData = {
+        const meshData: MeshData = {
           id: `${child.name}_${Date.now()}`,
           name: child.name,
           geometry: child.geometry,
@@ -102,23 +108,15 @@ export const useModelData = (id, path, position) => {
           nodesArray.push({
             id: meshData.id,
             name: child.name,
-            startPoint: {
-              x: startPoint.x,
-              y: startPoint.y,
-              z: startPoint.z,
-            },
-            endPoint: {
-              x: endPoint.x,
-              y: endPoint.y,
-              z: endPoint.z,
-            },
+            startPoint: startPoint,
+            endPoint: endPoint,
             center: boundaryCenter.add(position),
             dominantAxis: primaryAxis,
-            modelToNode: {
-              x: nodeCenter.x - modelCenter.x,
-              y: nodeCenter.y - modelCenter.y,
-              z: nodeCenter.z - modelCenter.z,
-            },
+            // modelToNode: {
+            //   x: nodeCenter.x - modelCenter.x,
+            //   y: nodeCenter.y - modelCenter.y,
+            //   z: nodeCenter.z - modelCenter.z,
+            // },
           });
         }
 
@@ -136,7 +134,7 @@ export const useModelData = (id, path, position) => {
     }
 
     return meshesArray;
-  }, [scene, id]);
+  }, [scene, id, position]);
 
   return tempMeshes;
 };

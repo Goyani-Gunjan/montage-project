@@ -1,7 +1,10 @@
 import { Line } from "@react-three/drei";
 import * as THREE from "three";
-
-const HoverEffects = ({ boundingBox, isHovered }) => {
+interface HoverEffectsProps {
+  boundingBox: THREE.Box3 | null;
+  isHovered: boolean;
+}
+const HoverEffects = ({ boundingBox, isHovered }: HoverEffectsProps) => {
   if (!isHovered || !boundingBox) return null;
 
   const hoverCorners = [
