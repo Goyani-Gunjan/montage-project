@@ -1,4 +1,4 @@
-// Model.js
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Html } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { observer } from "mobx-react";
@@ -13,23 +13,32 @@ import BoundingBox from "./helper/BoundingBox";
 import HoverEffects from "./helper/HoverEffects";
 import HtmlList from "./helper/HtmlList";
 import ModelRenderer from "./helper/ModelRenderer";
+import { MeshData, ModelData } from "../../store/types";
 
-const Model = observer(({ id, path, position }) => {
+interface ModelProps {
+  id: string;
+  path: string;
+  position: THREE.Vector3;
+}
+
+const Model = observer(({ id, path, position }: ModelProps) => {
   const manager = new Manager();
-  const groupRef = useRef();
+  const groupRef = useRef<THREE.Group>(null);
   const [isHovered, setIsHovered] = useState(false);
 
   const tempMeshes = useModelData(id, path, position);
   const { onMove, onDown, onUp } = useModelInteraction(id);
 
-  const model = manager.montageStore.models.find((m) => m.id === id);
-  const meshes = manager.montageStore.getMeshesByModelId(id);
+  const model = manager.montageStore.models.find(
+    (m) => m.id === id
+  ) as ModelData;
+  const meshes = manager.montageStore.getMeshesByModelId(id) as MeshData[];
 
   const boundingBox = useMemo(() => {
     if (meshes.length > 0) {
       const tempGroup = new THREE.Group();
       meshes.forEach((meshData) => {
-        const tempMesh = new THREE.Mesh(meshData.geometry);
+        const tempMesh = new THREE.Mesh(meshData.geometry, meshData.material);
         tempMesh.applyMatrix4(meshData.matrix);
         tempGroup.add(tempMesh);
       });

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { FaBookmark, FaCubes, FaPencilRuler } from "react-icons/fa";
 
 type SidebarProps = {
@@ -8,7 +7,6 @@ type SidebarProps = {
 };
 
 const Sidebar: React.FC<SidebarProps> = ({
-  setActiveSidebar,
   selectedSidebar,
   handleSidebarChange,
 }) => {

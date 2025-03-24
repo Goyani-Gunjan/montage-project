@@ -1,8 +1,9 @@
 import * as THREE from "three";
 import { MeshData, ModelData, Node } from "./types";
 import { processMeshesForModel } from "./utils";
+import MontageStore from "./MontageStore";
 
-export const MontageStoreActions = (store: any) => ({
+export const MontageStoreActions = (store: MontageStore) => ({
   setPlaneRef(ref: THREE.Mesh) {
     store.planeRef = ref;
   },
@@ -33,7 +34,10 @@ export const MontageStoreActions = (store: any) => ({
     }
   },
 
-  updateModelRotation(modelId: string, rotation: THREE.Euler | number[]) {
+  updateModelRotation(
+    modelId: string,
+    rotation: THREE.Euler | [number, number, number]
+  ) {
     const model = store.models.find((m: ModelData) => m.id === modelId);
     if (model) {
       if (Array.isArray(rotation)) {
@@ -50,22 +54,20 @@ export const MontageStoreActions = (store: any) => ({
 
       model.nodes.forEach((node) => {
         if (!node.originalCenter) {
-          node.originalCenter = {
-            x: node.center.x,
-            y: node.center.y,
-            z: node.center.z,
-          };
+          node.originalCenter = node.center;
           node.originalOffset = new THREE.Vector3(
             node.center.x - modelCenter.x,
             node.center.y - modelCenter.y,
             node.center.z - modelCenter.z
           );
+          node.originalDimensions = new THREE.Vector3(1, 1, 1);
+          node.originalAxis = node.dominantAxis;
         }
 
         const nodeLocalOriginal = new THREE.Vector3(
-          node.originalOffset.x,
-          node.originalOffset.y,
-          node.originalOffset.z
+          node.originalOffset?.x,
+          node.originalOffset?.y,
+          node.originalOffset?.z
         );
 
         const rotationMatrix = new THREE.Matrix4();
@@ -88,14 +90,36 @@ export const MontageStoreActions = (store: any) => ({
           modelCenter.z + nodeLocalRotated.z
         );
 
-        const nodeSize = new THREE.Vector3();
-        const nodeBox = new THREE.Box3().setFromCenterAndSize(
-          node.center,
-          new THREE.Vector3(1, 1, 1)
-        );
-        nodeBox.getSize(nodeSize);
+        if (!node.originalDimensions) {
+          node.originalDimensions = new THREE.Vector3(1, 1, 1);
+        }
 
-        node.dominantAxis = nodeSize.x > nodeSize.z ? "x" : "z";
+        let yRotation = 0;
+        if (Array.isArray(model.rotation)) {
+          yRotation = THREE.MathUtils.radToDeg(model.rotation[1]) % 360;
+          if (yRotation < 0) yRotation += 360;
+        } else {
+          yRotation = THREE.MathUtils.radToDeg(eulerRotation.y) % 360;
+          if (yRotation < 0) yRotation += 360;
+        }
+
+        if (node.originalAxis === "x") {
+          if (Math.abs(yRotation - 90) < 5 || Math.abs(yRotation - 270) < 5) {
+            node.dominantAxis = "z";
+          } else {
+            node.dominantAxis = "x";
+          }
+        } else if (node.originalAxis === "z") {
+          if (Math.abs(yRotation - 90) < 5 || Math.abs(yRotation - 270) < 5) {
+            node.dominantAxis = "x";
+          } else {
+            node.dominantAxis = "z";
+          }
+        }
+
+        console.log(
+          `Node rotated to ${yRotation}°, dominant axis is now ${node.dominantAxis}`
+        );
       });
     }
   },

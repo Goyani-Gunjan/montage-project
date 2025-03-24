@@ -1,8 +1,16 @@
 import { Edges } from "@react-three/drei";
 import * as THREE from "three";
+import { MeshData } from "../../../store/types";
+import Manager from "../../../store/Manager";
 
-const ModelRenderer = ({ meshes, manager }) => {
-  const createEdgesGeometry = (geometry) => {
+const ModelRenderer = ({
+  meshes,
+  manager,
+}: {
+  meshes: MeshData[];
+  manager: Manager;
+}) => {
+  const createEdgesGeometry = (geometry: THREE.BufferGeometry) => {
     return new THREE.EdgesGeometry(geometry);
   };
 

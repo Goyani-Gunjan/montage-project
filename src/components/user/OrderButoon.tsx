@@ -3,7 +3,11 @@ import Manager from "../../store/Manager";
 import { useState } from "react";
 import OrderPopup from "./OrderPopup"; // Assuming OrderPopup is in the same directory
 
-const OrderButton = observer(() => {
+interface OrderButtonProps {
+  isOpen: boolean; // Add this prop to control visibility/animation state
+}
+
+const OrderButton = observer(({ isOpen }: OrderButtonProps) => {
   const manager = new Manager();
   const [isPopupVisible, setPopupVisible] = useState(false);
 
@@ -17,7 +21,12 @@ const OrderButton = observer(() => {
 
   return (
     <>
-      <div className="w-85 fixed bottom-0 right-0 bg-gray-100 px-6 py-4 border-t border-gray-200 flex justify-between items-center">
+      <div
+        className={`w-85 fixed bottom-0 right-0 bg-gray-100 px-6 py-4 border-t border-gray-200 flex justify-between items-center transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {" "}
         <div className="flex flex-col">
           <div className="text-lg font-semibold">
             ${manager.uiStore.totalPrice.toLocaleString()}
