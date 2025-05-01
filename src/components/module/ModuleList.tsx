@@ -11,8 +11,8 @@ const ModuleList = observer(({ searchValue, moduleType }: ModuleListProps) => {
   const manager = new Manager();
   const filteredModules = manager.uiStore.modules.filter(
     (module) =>
-      module.name.includes(moduleType) &&
-      module.name.toLowerCase().includes(searchValue.toLowerCase())
+      module.moduleType.name.includes(moduleType) &&
+      module.moduleType.name.toLowerCase().includes(searchValue.toLowerCase())
   );
   const handleDragStart = (
     event: React.DragEvent<HTMLDivElement>,
@@ -22,11 +22,11 @@ const ModuleList = observer(({ searchValue, moduleType }: ModuleListProps) => {
     event.dataTransfer.setData("application/json", JSON.stringify(module));
   };
   return (
-    <div className="space-y-4 flex-1 p-1">
+    <div className="space-y-4 flex-1 p-1 ">
       {filteredModules.map((module) => (
         <div
           key={module.id}
-          className="relative  w-full rounded flex flex-col items-start group bg-white hover:border hover:border-gray-500 border border-gray-300"
+          className="relative w-full rounded flex flex-col items-start group bg-white hover:border hover:border-gray-500 border border-gray-300"
           draggable
           onDragStart={(e) => handleDragStart(e, module)}
         >
@@ -39,7 +39,7 @@ const ModuleList = observer(({ searchValue, moduleType }: ModuleListProps) => {
           <div className="w-full flex flex-col gap-2 mt-2 p-2 ">
             <img
               src={module.moduleImage}
-              className="w-full px-12 py-2 h-48 object-fit rounded-b"
+              className="w-full px-12 py-2 h-48 object-fit rounded-b "
             />
             <h3 className="text-md  font-semibold">{module.name}</h3>
             <div className="flex justify-between w-full text-gray-700 text-xs space-x-1">

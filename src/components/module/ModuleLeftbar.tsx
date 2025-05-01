@@ -38,7 +38,7 @@ const ModuleLeftBar = () => {
   }, []);
 
   return (
-    <div className="p-3 w-80 text-black bg-gray-100 fixed border-l border-gray-200 top-[72px] left-[80px] z-10">
+    <div className="p-3 w-80 text-black bg-gray-100 fixed border-l border-gray-200 top-[72px] left-[80px] z-10 ">
       <h1 className="text-lg font-semibold mt-2">Modules</h1>
       <hr className=" border border-gray-200" />
 
@@ -73,7 +73,7 @@ const ModuleLeftBar = () => {
       </div>
       <hr className=" border border-gray-200" />
 
-      <div className="space-y-4 flex p-2 mt-3 h-[calc(100vh-16rem)] overflow-y-auto">
+      <div className="space-y-4 flex p-2  h-[calc(100vh-16rem)] overflow-y-auto">
         <ModuleList searchValue={searchValue} moduleType={activeComponent} />
       </div>
     </div>

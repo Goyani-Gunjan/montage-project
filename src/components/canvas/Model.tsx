@@ -136,8 +136,10 @@ const Model = observer(({ id, path, position }: ModelProps) => {
             <HoverEffects boundingBox={boundingBox} isHovered={isHovered} />
           </>
         )}
-        {model?.showControls && <HtmlList modelId={id} />}
-        {model?.isLocked && (
+        {!manager.montageStore.is3D && model?.showControls && (
+          <HtmlList modelId={id} />
+        )}
+        {!manager.montageStore.is3D && model?.isLocked && (
           <Html>
             <div
               style={{
