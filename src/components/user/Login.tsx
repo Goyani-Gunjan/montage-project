@@ -7,7 +7,7 @@ import Cookies from "js-cookie";
 
 const Login = () => {
   const navigate = useNavigate();
-
+  console.log("");
   const handleLogin = async () => {
     await Cookies.set(
       "token",
